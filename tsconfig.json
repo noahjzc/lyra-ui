@@ -13,12 +13,14 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./packages/*/src",
-    "composite": true,
-    "incremental": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
   },
-  "include": ["components/**/*.ts", "components/**/*.tsx", ".storybook"],
+  "include": [
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "stories/**/*.ts",
+    "stories/**/*.tsx",
+    ".storybook",
+    "vite-env.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }
