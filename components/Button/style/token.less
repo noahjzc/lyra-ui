@@ -2,19 +2,135 @@
 
 @btn-font-weight: @font-weight-400;
 
-@btn-padding-horizontal-mini: @spacing-3;
-@btn-padding-horizontal-small: @spacing-4;
-@btn-padding-horizontal-default: @spacing-7;
-@btn-padding-horizontal-large: @spacing-9;
+@btn-disabled-opacity: 0.5;
+@btn-disabled-cursor: not-allowed;
 
-@btn-height-mini: @size-mini;
-@btn-height-small: @size-small;
-@btn-height-default: @size-default;
-@btn-height-large: @size-large;
+// ========================================
 
-@btn-font-size-mini: @font-size-body-1;
-@btn-font-size-small: @font-size-body-1;
-@btn-font-size-default: @font-size-body-3;
-@btn-font-size-large: @font-size-title-1;
+// Primary × Status
+@btn-primary-default-bg: @primary-6;
+@btn-primary-default-color: @white;
+@btn-primary-default-border: transparent;
+@btn-primary-default-hover-bg: @primary-5;
+@btn-primary-default-active-bg: @primary-8;
 
-@btn-border-radius: @border-radius-medium;
+@btn-primary-warning-bg: @warning-6;
+@btn-primary-warning-color: @white;
+@btn-primary-warning-border: transparent;
+@btn-primary-warning-hover-bg: @warning-5;
+@btn-primary-warning-active-bg: @warning-7;
+
+@btn-primary-danger-bg: @danger-6;
+@btn-primary-danger-color: @white;
+@btn-primary-danger-border: transparent;
+@btn-primary-danger-hover-bg: @danger-5;
+@btn-primary-danger-active-bg: @danger-7;
+
+@btn-primary-success-bg: @success-6;
+@btn-primary-success-color: @white;
+@btn-primary-success-border: transparent;
+@btn-primary-success-hover-bg: @success-5;
+@btn-primary-success-active-bg: @success-7;
+
+// Default × Status
+@btn-default-default-bg: @gray-1;
+@btn-default-default-color: @gray-8;
+@btn-default-default-border: @gray-4;
+@btn-default-default-hover-bg: @gray-2;
+@btn-default-default-active-bg: @gray-3;
+
+@btn-default-warning-bg: @warning-1;
+@btn-default-warning-color: @warning-6;
+@btn-default-warning-border: @warning-6;
+@btn-default-warning-hover-bg: @warning-2;
+@btn-default-warning-active-bg: @warning-3;
+
+@btn-default-danger-bg: @danger-1;
+@btn-default-danger-color: @danger-6;
+@btn-default-danger-border: @danger-6;
+@btn-default-danger-hover-bg: @danger-2;
+@btn-default-danger-active-bg: @danger-3;
+
+@btn-default-success-bg: @success-1;
+@btn-default-success-color: @success-6;
+@btn-default-success-border: @success-6;
+@btn-default-success-hover-bg: @success-2;
+@btn-default-success-active-bg: @success-3;
+
+// Dashed × Status
+@btn-dashed-default-bg: transparent;
+@btn-dashed-default-color: @gray-8;
+@btn-dashed-default-border: @gray-4;
+@btn-dashed-default-hover-bg: @gray-1;
+@btn-dashed-default-hover-color: @gray-9;
+@btn-dashed-default-active-bg: @gray-2;
+
+@btn-dashed-warning-bg: transparent;
+@btn-dashed-warning-color: @warning-6;
+@btn-dashed-warning-border: @warning-6;
+@btn-dashed-warning-hover-bg: @warning-1;
+@btn-dashed-warning-active-bg: @warning-2;
+
+@btn-dashed-danger-bg: transparent;
+@btn-dashed-danger-color: @danger-6;
+@btn-dashed-danger-border: @danger-6;
+@btn-dashed-danger-hover-bg: @danger-1;
+@btn-dashed-danger-active-bg: @danger-2;
+
+@btn-dashed-success-bg: transparent;
+@btn-dashed-success-color: @success-6;
+@btn-dashed-success-border: @success-6;
+@btn-dashed-success-hover-bg: @success-1;
+@btn-dashed-success-active-bg: @success-2;
+
+// Text × Status
+@btn-text-default-color: @gray-8;
+@btn-text-warning-color: @warning-6;
+@btn-text-danger-color: @danger-6;
+@btn-text-success-color: @success-6;
+
+@btn-text-default-hover-color: @gray-9;
+@btn-text-warning-hover-color: @warning-5;
+@btn-text-danger-hover-color: @danger-5;
+@btn-text-success-hover-color: @success-5;
+
+@btn-text-default-active-color: @gray-7;
+@btn-text-warning-active-color: @warning-7;
+@btn-text-danger-active-color: @danger-7;
+@btn-text-success-active-color: @success-7;
+
+// Link × Status
+@btn-link-default-color: @primary-6;
+@btn-link-warning-color: @warning-6;
+@btn-link-danger-color: @danger-6;
+@btn-link-success-color: @success-6;
+
+@btn-link-default-hover-color: @primary-5;
+@btn-link-warning-hover-color: @warning-5;
+@btn-link-danger-hover-color: @danger-5;
+@btn-link-success-hover-color: @success-5;
+
+@btn-link-default-active-color: @primary-7;
+@btn-link-warning-active-color: @warning-7;
+@btn-link-danger-active-color: @danger-7;
+@btn-link-success-active-color: @success-7;
+
+@btn-middle-padding-horizontal: @spacing-6;
+@btn-middle-padding-vertical: @spacing-2;
+@btn-middle-font-size: @font-size-body;
+@btn-middle-border-radius: @border-radius-medium;
+
+@btn-small-padding-horizontal: @spacing-5;
+@btn-small-padding-vertical: @spacing-1;
+@btn-small-font-size: @font-size-body-1;
+@btn-small-border-radius: @border-radius-medium;
+
+@btn-tiny-padding-horizontal: @spacing-4;
+@btn-tiny-padding-vertical: @spacing-none;
+@btn-tiny-font-size: @font-size-body-1;
+@btn-tiny-border-radius: @border-radius-small;
+
+@btn-large-padding-horizontal: @spacing-7;
+@btn-large-padding-vertical: @spacing-3;
+@btn-large-font-size: @font-size-title-1;
+@btn-large-border-radius: @border-radius-medium;

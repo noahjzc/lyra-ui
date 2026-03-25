@@ -3,9 +3,7 @@
 @btn-prefix-cls: ~'@{prefix}-btn';
 
 .@{btn-prefix-cls} {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   position: relative;
   outline: none;
   font-weight: @btn-font-weight;
@@ -13,110 +11,119 @@
   user-select: none;
   cursor: pointer;
   white-space: nowrap;
-  transition: all @transition-duration-3 cubic-bezier(0.645, 0.045, 0.355, 1);
   box-sizing: border-box;
   line-height: @line-height-base;
-  border-radius: @btn-border-radius;
-  border: 1px solid @color-transparent;
+  transition:
+    background-color @transition-duration-2 @transition-timing-function-linear,
+    color @transition-duration-2 @transition-timing-function-linear,
+    border-color @transition-duration-2 @transition-timing-function-linear,
+    box-shadow @transition-duration-2 @transition-timing-function-linear;
+}
 
-  &--size-mini {
-    height: @btn-height-mini;
-    padding: 0 @btn-padding-horizontal-mini;
-    font-size: @btn-font-size-mini;
-  }
+.btn-type-status(@type, @status) {
+  .@{btn-prefix-cls}--@{type}.@{btn-prefix-cls}-status--@{status}:not(
+      .@{btn-prefix-cls}--disabled
+    ) {
+    background-color: ~'@{btn-@{type}-@{status}-bg}';
+    color: ~'@{btn-@{type}-@{status}-color}';
+    border: @border-1 @border-solid ~'@{btn-@{type}-@{status}-border}';
 
-  &--size-small {
-    height: @btn-height-small;
-    padding: 0 @btn-padding-horizontal-small;
-    font-size: @btn-font-size-small;
-  }
-
-  &--size-default {
-    height: @btn-height-default;
-    padding: 0 @btn-padding-horizontal-default;
-    font-size: @btn-font-size-default;
-  }
-
-  &--size-large {
-    height: @btn-height-large;
-    padding: 0 @btn-padding-horizontal-large;
-    font-size: @btn-font-size-large;
-  }
-
-  &--primary {
-    background-color: @primary-6;
-    color: @white;
-
-    &:hover {
-      background-color: @primary-5;
+    &:not(.@{btn-prefix-cls}--loading):hover {
+      background-color: ~'@{btn-@{type}-@{status}-hover-bg}';
+      color: ~'@{btn-@{type}-@{status}-color}';
+      border: @border-1 @border-solid ~'@{btn-@{type}-@{status}-border}';
     }
 
-    &:active {
-      background-color: @primary-7;
+    &:not(.@{btn-prefix-cls}--loading):active {
+      background-color: ~'@{btn-@{type}-@{status}-active-bg}';
+      color: ~'@{btn-@{type}-@{status}-color}';
+      border: @border-1 @border-solid ~'@{btn-@{type}-@{status}-border}';
     }
-
-    &:focus-visible {
-      outline: 2px solid @primary-3;
-      outline-offset: 1px;
-    }
-  }
-
-  &--secondary {
-    background-color: @white;
-    color: @gray-8;
-    border-color: @gray-4;
-
-    &:hover {
-      color: @primary-5;
-      border-color: @primary-5;
-    }
-
-    &:active {
-      color: @primary-7;
-      border-color: @primary-7;
-    }
-
-    &:focus-visible {
-      outline: 1px solid @primary-3;
-      outline-offset: 1px;
-    }
-  }
-
-  &--text {
-    background-color: transparent;
-    color: @gray-8;
-    border-color: @color-transparent;
-
-    &:hover {
-      color: @primary-5;
-    }
-
-    &:active {
-      color: @primary-7;
-    }
-  }
-
-  &--loading {
-    cursor: default;
-    opacity: 0.7;
-  }
-
-  &__loading-icon {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    margin-right: @spacing-2;
-    border: 2px solid currentColor;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: lyra-btn-spin 0.6s linear infinite;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
   }
 }
+
+.btn-type-status(primary, default);
+.btn-type-status(primary, warning);
+.btn-type-status(primary, danger);
+.btn-type-status(primary, success);
+
+.btn-type-status(default, default);
+.btn-type-status(default, warning);
+.btn-type-status(default, danger);
+.btn-type-status(default, success);
+
+.btn-type-status(dashed, default);
+.btn-type-status(dashed, warning);
+.btn-type-status(dashed, danger);
+.btn-type-status(dashed, success);
+
+.btn-text-status(@status) {
+  .@{btn-prefix-cls}--text.@{btn-prefix-cls}-status--@{status}:not(
+      .@{btn-prefix-cls}--disabled
+    ) {
+    color: ~'@{btn-text-@{status}-color}';
+
+    &:not(.@{btn-prefix-cls}--loading):hover {
+      color: ~'@{btn-text-@{status}-hover-color}';
+    }
+
+    &:not(.@{btn-prefix-cls}--loading):active {
+      color: ~'@{btn-text-@{status}-active-color}';
+    }
+  }
+}
+
+.btn-text-status(default);
+.btn-text-status(warning);
+.btn-text-status(danger);
+.btn-text-status(success);
+
+.btn-link-status(@status) {
+  .@{btn-prefix-cls}--link.@{btn-prefix-cls}-status--@{status}:not(
+      .@{btn-prefix-cls}--disabled
+    ) {
+    color: ~'@{btn-link-@{status}-color}';
+
+    &:not(.@{btn-prefix-cls}--loading):hover {
+      color: ~'@{btn-link-@{status}-hover-color}';
+    }
+
+    &:not(.@{btn-prefix-cls}--loading):active {
+      color: ~'@{btn-link-@{status}-active-color}';
+    }
+  }
+}
+
+.btn-link-status(default);
+.btn-link-status(warning);
+.btn-link-status(danger);
+.btn-link-status(success);
+
+.@{btn-prefix-cls}--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.@{btn-prefix-cls}-size--default {
+  padding: @spacing-2 @spacing-6;
+  font-size: @font-size-body;
+  border-radius: @border-radius-medium;
+}
+
+.btn-size(@size) {
+  .@{btn-prefix-cls}-size--@{size} {
+    padding: ~'@{btn-@{size}-padding-vertical}'
+      ~'@{btn-@{size}-padding-horizontal}';
+    font-size: ~'@{btn-@{size}-font-size}';
+    border-radius: ~'@{btn-@{size}-border-radius}';
+  }
+}
+
+.btn-size(tiny);
+.btn-size(small);
+.btn-size(middle);
+.btn-size(large);
 
 @keyframes lyra-btn-spin {
   to {
