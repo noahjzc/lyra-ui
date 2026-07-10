@@ -20,7 +20,12 @@ import {
   DataTableToolbar,
 } from './toolbar';
 import type { DataTableColumn, DataTableProps } from './types';
-import { deriveColumnPinning, getDensity, resolveUpdater } from './utils';
+import {
+  deriveColumnPinning,
+  getDensity,
+  normalizeSelectableColumnPinning,
+  resolveUpdater,
+} from './utils';
 
 export type {
   DataTableColumn,
@@ -75,10 +80,6 @@ export function DataTable<TData extends RowData>({
   ...props
 }: DataTableProps<TData>) {
   const resolvedDensity = getDensity(density, compact);
-  const derivedColumnPinning = React.useMemo(
-    () => deriveColumnPinning({ columns, selectable }),
-    [columns, selectable],
-  );
   const [internalSorting, setInternalSorting] = React.useState<SortingState>(
     defaultSorting ?? [],
   );
@@ -87,7 +88,7 @@ export function DataTable<TData extends RowData>({
   const [internalColumnVisibility, setInternalColumnVisibility] =
     React.useState<VisibilityState>(defaultColumnVisibility ?? {});
   const [internalColumnPinning, setInternalColumnPinning] = React.useState(
-    defaultColumnPinning ?? derivedColumnPinning,
+    () => defaultColumnPinning ?? deriveColumnPinning({ columns, selectable }),
   );
   const [internalCurrent, setInternalCurrent] = React.useState(
     pagination?.current ?? 1,
@@ -97,7 +98,11 @@ export function DataTable<TData extends RowData>({
   const effectiveColumnVisibility =
     columnVisibility ?? internalColumnVisibility;
   const effectiveColumnPinning =
-    columnPinning ?? internalColumnPinning ?? derivedColumnPinning;
+    columnPinning ??
+    normalizeSelectableColumnPinning(
+      internalColumnPinning,
+      selectable && defaultColumnPinning == null,
+    );
   const pageSize = pagination?.pageSize ?? Math.max(data.length, 1);
   const currentPage = pagination?.current ?? internalCurrent;
   const tablePagination = {

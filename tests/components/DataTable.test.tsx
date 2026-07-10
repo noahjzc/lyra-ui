@@ -144,6 +144,64 @@ describe('DataTable primitive', () => {
     );
   });
 
+  it('respects controlled pinning when it explicitly unpins meta-pinned columns', () => {
+    render(
+      <DataTable
+        columnPinning={{ left: [], right: [] }}
+        columns={columns}
+        data={rows}
+      />,
+    );
+
+    const nameHeader = screen.getByRole('columnheader', { name: /客户名称/ });
+    const nameCell = screen.getByRole('cell', { name: '上海客户' });
+    const actionHeader = screen.getByRole('columnheader', { name: '操作' });
+    const actionCell = screen.getAllByRole('cell', { name: '查看' })[0];
+
+    [nameHeader, nameCell, actionHeader, actionCell].forEach(element => {
+      expect(element).not.toHaveAttribute('data-pinned');
+      expect(element).not.toHaveClass('ly-data-table-cell-pinned-left');
+      expect(element).not.toHaveClass('ly-data-table-cell-pinned-right');
+      expect(element.style.left).toBe('');
+      expect(element.style.right).toBe('');
+    });
+  });
+
+  it('normalizes uncontrolled pinning as the selectable column is added and removed', () => {
+    const { rerender } = render(
+      <DataTable columns={columns} data={rows} selectable={false} />,
+    );
+
+    rerender(<DataTable columns={columns} data={rows} selectable />);
+
+    const selectionHeader = screen
+      .getByRole('checkbox', { name: '选择当前页全部行' })
+      .closest('th');
+    const selectionCell = screen
+      .getByRole('checkbox', { name: '选择第 1 行' })
+      .closest('td');
+    const nameHeader = screen.getByRole('columnheader', { name: /客户名称/ });
+    const nameCell = screen.getByRole('cell', { name: '上海客户' });
+
+    expect(selectionHeader).toHaveClass('ly-data-table-cell-pinned-left');
+    expect(selectionCell).toHaveClass('ly-data-table-cell-pinned-left');
+    expect(nameHeader).toHaveClass('ly-data-table-cell-pinned-left');
+    expect(nameCell).toHaveClass('ly-data-table-cell-pinned-left');
+    expect(selectionHeader).toHaveStyle({ left: '0px' });
+    expect(selectionCell).toHaveStyle({ left: '0px' });
+    expect(nameHeader).toHaveStyle({ left: '44px' });
+    expect(nameCell).toHaveStyle({ left: '44px' });
+
+    rerender(<DataTable columns={columns} data={rows} selectable={false} />);
+
+    expect(
+      screen.queryByRole('checkbox', { name: '选择当前页全部行' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /客户名称/ })).toHaveStyle({
+      left: '0px',
+    });
+  });
+
   it('supports column visibility', () => {
     render(
       <DataTable

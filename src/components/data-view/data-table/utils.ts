@@ -42,14 +42,16 @@ export function getAlignClassName(align: DataTableColumnMeta['align']) {
   return 'text-left';
 }
 
-export function getPinningClassName(pinned: DataTableColumnMeta['pinned']) {
+export function getPinningClassName(
+  pinned: DataTableColumnMeta['pinned'] | false,
+) {
   if (pinned === 'left') return 'ly-data-table-cell-pinned-left';
   if (pinned === 'right') return 'ly-data-table-cell-pinned-right';
   return '';
 }
 
 export function getPinningEdgeClassName(
-  pinned: DataTableColumnMeta['pinned'],
+  pinned: DataTableColumnMeta['pinned'] | false,
   isEdge: boolean,
 ) {
   if (!isEdge) return '';
@@ -117,6 +119,23 @@ export function deriveColumnPinning<TData extends RowData>({
   });
 
   return { left, right };
+}
+
+export function normalizeSelectableColumnPinning(
+  columnPinning: ColumnPinningState,
+  selectable: boolean,
+): ColumnPinningState {
+  const left = (columnPinning.left ?? []).filter(
+    columnId => columnId !== '__select__',
+  );
+  const right = (columnPinning.right ?? []).filter(
+    columnId => columnId !== '__select__',
+  );
+
+  return {
+    left: selectable ? ['__select__', ...left] : left,
+    right,
+  };
 }
 
 export function getDensity(

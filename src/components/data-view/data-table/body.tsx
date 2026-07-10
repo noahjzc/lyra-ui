@@ -166,7 +166,6 @@ function DataTableDataRow<TData extends RowData>({
             | DataTableColumnMeta
             | undefined;
           const pinned = cell.column.getIsPinned();
-          const pinning = pinned || meta?.pinned;
           const isPinnedEdge =
             pinned === 'left'
               ? cell.column.getIsLastColumn('left')
@@ -182,8 +181,8 @@ function DataTableDataRow<TData extends RowData>({
                 densityClassName[density].cell,
                 variant === 'log' && 'py-2 text-xs',
                 getAlignClassName(meta?.align),
-                getPinningClassName(pinning),
-                getPinningEdgeClassName(pinning, isPinnedEdge),
+                getPinningClassName(pinned),
+                getPinningEdgeClassName(pinned, isPinnedEdge),
                 meta?.className,
               )}
               key={cell.id}

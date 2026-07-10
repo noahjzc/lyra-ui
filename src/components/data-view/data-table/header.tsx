@@ -26,7 +26,6 @@ function DataTableHeaderCell<TData extends RowData>({
 }) {
   const meta = header.column.columnDef.meta as DataTableColumnMeta | undefined;
   const pinned = header.column.getIsPinned();
-  const pinning = pinned || meta?.pinned;
   const isPinnedEdge =
     pinned === 'left'
       ? header.column.getIsLastColumn('left')
@@ -68,8 +67,8 @@ function DataTableHeaderCell<TData extends RowData>({
         'border-ui-border border-b align-middle text-xs text-ui-muted-foreground font-(--ui-data-table-header-font-weight)',
         densityClassName[density].header,
         getAlignClassName(meta?.align),
-        getPinningClassName(pinning),
-        getPinningEdgeClassName(pinning, isPinnedEdge),
+        getPinningClassName(pinned),
+        getPinningEdgeClassName(pinned, isPinnedEdge),
         meta?.headerClassName,
       )}
       colSpan={header.colSpan}
