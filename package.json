@@ -32,6 +32,7 @@
     "pack:check": "node scripts/pack-check.mjs",
     "verify:consumer": "node scripts/pack-check.mjs --consumer",
     "verify:release": "node scripts/release-preflight.mjs",
+    "verify:registry": "node scripts/verify-registry.mjs",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm verify:dist && pnpm build-storybook",
     "prepack": "pnpm build && pnpm verify:dist",
     "prepublishOnly": "pnpm verify:release"

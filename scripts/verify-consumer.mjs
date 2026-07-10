@@ -4,13 +4,26 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const usage = 'Usage: verify-consumer.mjs <tarball.tgz> | --registry <version>';
+const exactSemverPattern =
+  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/;
+
+export function isExactSemver(value) {
+  return typeof value === 'string' && exactSemverPattern.test(value);
+}
+
+export function assertExactSemver(value) {
+  if (!isExactSemver(value)) {
+    throw new Error(`Registry version must be an exact semver: ${value ?? ''}`);
+  }
+  return value;
+}
 
 export function parseConsumerArgs(args) {
   if (args[0] === '--registry') {
     if (args.length !== 2 || !args[1] || args[1].startsWith('-')) {
       throw new Error(usage);
     }
-    return { mode: 'registry', version: args[1] };
+    return { mode: 'registry', version: assertExactSemver(args[1]) };
   }
 
   if (args.length !== 1 || !args[0].endsWith('.tgz')) {

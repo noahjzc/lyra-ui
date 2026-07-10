@@ -7,6 +7,10 @@ export interface ConsumerSpecOptions {
   isFile?: (path: string) => boolean;
 }
 
+export declare function isExactSemver(value: unknown): value is string;
+
+export declare function assertExactSemver(value: unknown): string;
+
 export declare function parseConsumerArgs(args: string[]): ConsumerRequest;
 
 export declare function resolveConsumerSpec(
