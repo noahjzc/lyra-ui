@@ -15,6 +15,7 @@ import type {
   CascaderValue,
 } from './types';
 import {
+  canCommitPath,
   canExpand,
   filterPathOptions,
   findPathOptions,
@@ -172,6 +173,10 @@ export const Cascader = React.forwardRef<HTMLDivElement, CascaderProps>(
     }
 
     function commitPath(nextPath: CascaderPathValue) {
+      if (!canCommitPath(findPathOptions(options, nextPath), changeOnSelect)) {
+        return;
+      }
+
       if (multiple) {
         const exists = selectedPaths.some(path => isSamePath(path, nextPath));
         const nextPaths = exists

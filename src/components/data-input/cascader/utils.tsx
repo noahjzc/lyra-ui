@@ -42,6 +42,18 @@ export function canExpand(option: CascaderOption) {
   return hasChildren(option) || option.isLeaf === false;
 }
 
+export function canCommitPath(
+  nodes: CascaderOption[],
+  changeOnSelect: boolean,
+) {
+  const option = nodes.at(-1);
+
+  if (!option || nodes.some(node => node.disabled)) return false;
+  if (changeOnSelect) return true;
+
+  return !hasChildren(option) && option.isLeaf !== false;
+}
+
 export function findPathOptions(
   options: CascaderOption[],
   value: CascaderPathValue,
@@ -116,11 +128,12 @@ export function flattenPathOptions(
     const nextNodes = [...prefix, option];
     const nextValue = nextNodes.map(node => node.value);
     const children = option.children ?? [];
-    const leaf = children.length === 0 || option.isLeaf === true;
+    const leaf = children.length === 0 && option.isLeaf !== false;
     const includeCurrent = leaf || changeOnSelect;
-    const childPaths = children.length
-      ? flattenPathOptions(children, changeOnSelect, nextNodes)
-      : [];
+    const childPaths =
+      !option.disabled && children.length
+        ? flattenPathOptions(children, changeOnSelect, nextNodes)
+        : [];
 
     return includeCurrent
       ? [{ nodes: nextNodes, value: nextValue }, ...childPaths]

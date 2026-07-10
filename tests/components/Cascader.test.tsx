@@ -81,6 +81,69 @@ describe('Cascader', () => {
     ).toBeInTheDocument();
   });
 
+  it('keeps disabled paths from committing through search', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+
+    render(
+      <Cascader
+        onValueChange={onValueChange}
+        options={[
+          { disabled: true, label: '禁用末级', value: 'disabled-leaf' },
+          {
+            children: [{ label: '禁用祖先子级', value: 'disabled-child' }],
+            disabled: true,
+            label: '禁用祖先节点',
+            value: 'disabled-parent',
+          },
+        ]}
+        placeholder="搜索禁用路径"
+        showSearch
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '搜索禁用路径' }));
+    await user.type(
+      screen.getByRole('textbox', { name: '搜索级联路径' }),
+      '禁用',
+    );
+
+    const disabledLeaf = screen.getByRole('option', { name: '禁用末级' });
+
+    expect(disabledLeaf).toBeDisabled();
+    await user.click(disabledLeaf);
+    expect(
+      screen.queryByRole('option', { name: /禁用祖先节点.*禁用祖先子级/ }),
+    ).not.toBeInTheDocument();
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it('does not expose unloaded nodes as searchable leaves', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+
+    render(
+      <Cascader
+        changeOnSelect={false}
+        onValueChange={onValueChange}
+        options={[{ isLeaf: false, label: '待加载节点', value: 'pending' }]}
+        placeholder="搜索待加载节点"
+        showSearch
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '搜索待加载节点' }));
+    await user.type(
+      screen.getByRole('textbox', { name: '搜索级联路径' }),
+      '待加载',
+    );
+
+    expect(
+      screen.queryByRole('option', { name: '待加载节点' }),
+    ).not.toBeInTheDocument();
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
   it('supports multiple paths and keeps the panel open', async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();

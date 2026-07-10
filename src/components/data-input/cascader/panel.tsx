@@ -222,17 +222,22 @@ export function CascaderSearchList({
       role="listbox"
     >
       {paths.map(path => {
+        const disabled = path.nodes.some(node => node.disabled);
         const selected = selectedPathKeys.has(pathKey(path.value));
 
         return (
           <button
+            aria-disabled={disabled ? true : undefined}
             aria-selected={selected ? true : undefined}
             className={cn(
               'flex min-h-9 items-center justify-between gap-3 rounded-md px-2 py-1.5 text-left text-sm outline-none transition-ui-state hover:bg-(--ui-control-hover-background) focus:bg-(--ui-control-hover-background)',
               selected &&
                 'bg-(--ui-button-ghost-background) font-extrabold text-(--ui-button-default-hover-foreground)',
+              disabled &&
+                'cursor-not-allowed bg-transparent text-(--ui-input-disabled-foreground) hover:bg-transparent',
             )}
             data-slot="cascader-search-option"
+            disabled={disabled}
             key={pathKey(path.value)}
             onClick={() => onSelect(path.value)}
             role="option"
