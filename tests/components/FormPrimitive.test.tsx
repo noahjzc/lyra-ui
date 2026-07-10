@@ -2,12 +2,50 @@ import '@testing-library/jest-dom/vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import type {
+  FormContextValue,
+  FormItemContextValue,
+} from '../../src/components/data-input';
 import {
   Form,
+  FormContext,
   FormControl,
   FormItem,
+  FormItemContext,
   Input,
+  useFormContext,
+  useFormItemContext,
 } from '../../src/components/data-input';
+
+const formContextValue = {
+  disabled: true,
+  layout: 'horizontal',
+  readOnly: true,
+  requiredMark: 'optional',
+  size: 'small',
+} satisfies FormContextValue;
+
+const formItemContextValue = {
+  disabled: true,
+  fieldId: 'contract-field',
+  readOnly: true,
+} satisfies FormItemContextValue;
+
+const FormContractProbe = () => {
+  const form = useFormContext();
+  const item = useFormItemContext();
+
+  return (
+    <output
+      data-disabled={form.disabled && item.disabled ? 'true' : 'false'}
+      data-field-id={item.fieldId}
+      data-layout={form.layout}
+      data-readonly={form.readOnly && item.readOnly ? 'true' : 'false'}
+      data-size={form.size}
+      data-testid="form-contract-probe"
+    />
+  );
+};
 
 describe('Form primitive', () => {
   it('links label, control, description and message', () => {
@@ -168,6 +206,121 @@ describe('Form primitive', () => {
     );
     expect(container.querySelector('[data-slot="form-footer"]')).toHaveClass(
       'justify-end',
+    );
+  });
+
+  it('propagates disabled form state to asChild inputs', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Form disabled>
+        <Form.Item label="禁用客户名称" name="disabled-name">
+          <Form.Control asChild>
+            <Input defaultValue="不可修改" />
+          </Form.Control>
+        </Form.Item>
+      </Form>,
+    );
+
+    const input = screen.getByRole('textbox', { name: '禁用客户名称' });
+
+    expect(input).toBeDisabled();
+    expect(input.closest('[data-slot="input-root"]')).toHaveAttribute(
+      'data-disabled',
+      'true',
+    );
+
+    await user.type(input, '新增');
+
+    expect(input).toHaveValue('不可修改');
+  });
+
+  it('propagates readonly form state without disabling inputs', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Form readOnly>
+        <Form.Item label="只读客户名称" name="readonly-name">
+          <Form.Control asChild>
+            <Input defaultValue="仅查看" />
+          </Form.Control>
+        </Form.Item>
+      </Form>,
+    );
+
+    const input = screen.getByRole('textbox', { name: '只读客户名称' });
+
+    expect(input).toHaveAttribute('readonly');
+    expect(input).not.toBeDisabled();
+    expect(input.closest('[data-slot="input-root"]')).toHaveAttribute(
+      'data-readonly',
+      'true',
+    );
+
+    await user.type(input, '新增');
+
+    expect(input).toHaveValue('仅查看');
+  });
+
+  it('allows explicit field state false to override form defaults', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Form disabled readOnly>
+        <Form.Item
+          disabled={false}
+          label="可编辑客户名称"
+          name="editable-name"
+          readOnly={false}
+        >
+          <Form.Control asChild>
+            <Input defaultValue="初始值" />
+          </Form.Control>
+        </Form.Item>
+      </Form>,
+    );
+
+    const input = screen.getByRole('textbox', { name: '可编辑客户名称' });
+    const item = input.closest('[data-slot="form-item"]');
+
+    expect(input).not.toBeDisabled();
+    expect(input).not.toHaveAttribute('readonly');
+    expect(item).not.toHaveAttribute('data-disabled');
+    expect(item).not.toHaveAttribute('data-readonly');
+
+    await user.type(input, '已更新');
+
+    expect(input).toHaveValue('初始值已更新');
+  });
+
+  it('exports form contexts, hooks and value types through data-input', () => {
+    render(
+      <FormContext.Provider value={formContextValue}>
+        <FormItemContext.Provider value={formItemContextValue}>
+          <FormContractProbe />
+        </FormItemContext.Provider>
+      </FormContext.Provider>,
+    );
+
+    expect(screen.getByTestId('form-contract-probe')).toHaveAttribute(
+      'data-layout',
+      'horizontal',
+    );
+    expect(screen.getByTestId('form-contract-probe')).toHaveAttribute(
+      'data-size',
+      'small',
+    );
+    expect(screen.getByTestId('form-contract-probe')).toHaveAttribute(
+      'data-field-id',
+      'contract-field',
+    );
+    expect(screen.getByTestId('form-contract-probe')).toHaveAttribute(
+      'data-disabled',
+      'true',
+    );
+    expect(screen.getByTestId('form-contract-probe')).toHaveAttribute(
+      'data-readonly',
+      'true',
     );
   });
 });

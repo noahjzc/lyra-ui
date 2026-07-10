@@ -17,6 +17,7 @@ export const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
       children,
       className,
       controlId,
+      disabled,
       error,
       extra,
       hasFeedback,
@@ -26,6 +27,8 @@ export const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
       name,
       optional = false,
       required = false,
+      readOnly,
+      readonly,
       span = 1,
       validateStatus,
       wrapperCol,
@@ -36,6 +39,9 @@ export const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
   ) => {
     const generatedId = React.useId();
     const form = useFormContext();
+    const effectiveDisabled = disabled ?? form.disabled;
+    const effectiveReadOnly =
+      readOnly ?? readonly ?? form.readOnly ?? form.readonly;
     const fieldId = controlId ?? getFieldId(name) ?? generatedId;
     const descriptionId =
       help != null && error == null ? `${fieldId}-description` : undefined;
@@ -52,20 +58,20 @@ export const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
       () => ({
         descriptionId:
           [descriptionId, extraId].filter(Boolean).join(' ') || undefined,
-        disabled: form.disabled,
+        disabled: effectiveDisabled,
         error: isError,
         fieldId,
         messageId,
-        readOnly: form.readOnly,
-        readonly: form.readOnly,
+        readOnly: effectiveReadOnly,
+        readonly: effectiveReadOnly,
         validateStatus: status,
       }),
       [
         descriptionId,
         extraId,
         fieldId,
-        form.disabled,
-        form.readOnly,
+        effectiveDisabled,
+        effectiveReadOnly,
         isError,
         messageId,
         status,
@@ -88,9 +94,9 @@ export const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
             itemSpanClassName[span],
             className,
           )}
-          data-disabled={form.disabled ? true : undefined}
+          data-disabled={effectiveDisabled ? true : undefined}
           data-layout={form.layout}
-          data-readonly={form.readOnly ? true : undefined}
+          data-readonly={effectiveReadOnly ? true : undefined}
           data-slot="form-item"
           data-status={status}
           ref={ref}

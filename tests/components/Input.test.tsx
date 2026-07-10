@@ -22,6 +22,26 @@ describe('Input', () => {
     expect(input).toHaveClass('h-[22px]', 'text-sm', 'leading-[22px]');
   });
 
+  it('normalizes null size to middle for inputs and number inputs', () => {
+    render(
+      <>
+        <Input aria-label="空尺寸文本" size={null} />
+        <InputNumber aria-label="空尺寸数值" size={null} />
+      </>,
+    );
+
+    expect(
+      screen
+        .getByRole('textbox', { name: '空尺寸文本' })
+        .closest('[data-slot="input-root"]'),
+    ).toHaveClass('h-8', 'px-2.5');
+    expect(
+      screen
+        .getByRole('spinbutton', { name: '空尺寸数值' })
+        .closest('[data-slot="input-number-root"]'),
+    ).toHaveClass('h-8', 'px-2.5');
+  });
+
   it('supports design variants and sizes', () => {
     render(
       <>

@@ -51,6 +51,7 @@ export interface FormProps
 
 export interface FormItemProps extends React.HTMLAttributes<HTMLDivElement> {
   controlId?: string;
+  disabled?: boolean;
   error?: React.ReactNode;
   extra?: React.ReactNode;
   hasFeedback?: boolean;
@@ -60,6 +61,8 @@ export interface FormItemProps extends React.HTMLAttributes<HTMLDivElement> {
   name?: string;
   optional?: boolean;
   required?: boolean;
+  readOnly?: boolean;
+  readonly?: boolean;
   span?: 1 | 2 | 3 | 'full';
   validateStatus?: FormValidateStatus;
   wrapperCol?: FormColumnConfig;

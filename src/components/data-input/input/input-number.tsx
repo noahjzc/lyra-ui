@@ -76,7 +76,7 @@ export const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
       prefix,
       prefixAddon,
       readOnly = false,
-      size = 'middle',
+      size: providedSize,
       step = 1,
       suffix,
       suffixAddon,
@@ -87,6 +87,7 @@ export const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
     },
     ref,
   ) => {
+    const size = providedSize ?? 'middle';
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [internalValue, setInternalValue] =
       React.useState<InputNumberValue>(defaultValue);

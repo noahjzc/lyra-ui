@@ -91,4 +91,14 @@ describe('Switch', () => {
         ),
     ).toBeInTheDocument();
   });
+
+  it('drops runtime content props passed through object spread', () => {
+    const runtimeProps = { content: 'text' };
+
+    render(<Switch aria-label="运行时内容" {...runtimeProps} />);
+
+    expect(
+      screen.getByRole('switch', { name: '运行时内容' }),
+    ).not.toHaveAttribute('content');
+  });
 });

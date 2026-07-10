@@ -58,22 +58,28 @@ export const FormControl = React.forwardRef<HTMLElement, FormControlProps>(
     const describedBy = [item.descriptionId, item.messageId]
       .filter(Boolean)
       .join(' ');
-    const Comp = asChild ? Slot : 'div';
+    const readOnly = item.readOnly ?? item.readonly;
+    const controlProps = {
+      'aria-describedby': describedBy || props['aria-describedby'],
+      'aria-invalid': item.error ? true : props['aria-invalid'],
+      className: cn(!asChild && 'min-w-0', className),
+      'data-disabled': item.disabled ? true : undefined,
+      'data-readonly': readOnly ? true : undefined,
+      'data-slot': 'form-control',
+      'data-status': item.validateStatus,
+      id: props.id ?? item.fieldId,
+      ...props,
+    };
+    const controlStateProps = {
+      ...(item.disabled === undefined ? {} : { disabled: item.disabled }),
+      ...(readOnly === undefined ? {} : { readOnly }),
+    };
 
-    return (
-      <Comp
-        aria-describedby={describedBy || props['aria-describedby']}
-        aria-invalid={item.error ? true : props['aria-invalid']}
-        className={cn(!asChild && 'min-w-0', className)}
-        data-disabled={item.disabled ? true : undefined}
-        data-readonly={item.readOnly ? true : undefined}
-        data-slot="form-control"
-        data-status={item.validateStatus}
-        id={props.id ?? item.fieldId}
-        ref={ref as React.Ref<HTMLDivElement>}
-        {...props}
-      />
-    );
+    if (asChild) {
+      return <Slot {...controlProps} {...controlStateProps} ref={ref} />;
+    }
+
+    return <div {...controlProps} ref={ref as React.Ref<HTMLDivElement>} />;
   },
 );
 

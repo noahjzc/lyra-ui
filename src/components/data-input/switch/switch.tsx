@@ -10,6 +10,13 @@ import {
   switchTrackVariants,
 } from './variants';
 
+function omitRuntimeContent<T extends object>(props: T) {
+  const { content, ...rootProps } = props as T & { content?: unknown };
+
+  void content;
+  return rootProps;
+}
+
 export const Switch = React.forwardRef<
   React.ComponentRef<typeof SwitchPrimitive.Root>,
   SwitchProps
@@ -45,6 +52,7 @@ export const Switch = React.forwardRef<
     const contentNode = mergedChecked
       ? (checkedText ?? checkedIcon)
       : (uncheckedText ?? uncheckedIcon);
+    const rootProps = omitRuntimeContent(props);
 
     function handleCheckedChange(nextChecked: boolean) {
       if (loading) return;
@@ -67,7 +75,7 @@ export const Switch = React.forwardRef<
         disabled={effectiveDisabled}
         onCheckedChange={handleCheckedChange}
         ref={ref}
-        {...props}
+        {...rootProps}
       >
         {content !== 'none' && contentNode != null && (
           <span

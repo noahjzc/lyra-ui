@@ -35,7 +35,7 @@ export const InputBase = React.forwardRef<HTMLInputElement, InputProps>(
       prefixAddon,
       readOnly = false,
       showCount = false,
-      size = 'middle',
+      size: providedSize,
       suffix,
       suffixAddon,
       type = 'text',
@@ -45,6 +45,7 @@ export const InputBase = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref,
   ) => {
+    const size = providedSize ?? 'middle';
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [internalValue, setInternalValue] = React.useState(
       defaultValue ?? '',
