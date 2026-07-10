@@ -31,16 +31,30 @@ describe('SearchInput', () => {
     expect(onValueChange).toHaveBeenLastCalledWith('同');
   });
 
-  it('clears search value and returns focus', async () => {
+  it('clears uncontrolled search value, returns focus, and submits empty search', async () => {
     const user = userEvent.setup();
     const onClear = vi.fn();
+    const onSearch = vi.fn();
 
-    render(<SearchInput defaultValue="contract" onClear={onClear} />);
+    render(
+      <SearchInput
+        defaultValue="contract"
+        onClear={onClear}
+        onSearch={onSearch}
+      />,
+    );
+
+    const input = screen.getByRole('searchbox');
 
     await user.click(screen.getByRole('button', { name: '清空搜索' }));
 
     expect(onClear).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole('searchbox')).toHaveFocus();
+    expect(input).toHaveValue('');
+    expect(input).toHaveFocus();
+
+    await user.keyboard('{Enter}');
+
+    expect(onSearch).toHaveBeenCalledWith('');
   });
 
   it('submits with explicit button and blocks while loading', async () => {

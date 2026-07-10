@@ -101,14 +101,13 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           aria-busy={loading ? true : props['aria-busy']}
           aria-invalid={isInvalid ? true : ariaInvalid}
           className="min-w-0 flex-1 bg-transparent p-0 text-inherit outline-none placeholder:text-ui-muted-foreground disabled:cursor-not-allowed disabled:text-(--ui-input-disabled-foreground)"
-          defaultValue={value == null ? defaultValue : undefined}
           disabled={disabled}
           onChange={updateValue}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           ref={inputRef}
           type="search"
-          value={value}
+          value={mergedValue}
           {...props}
         />
         {loading ? (

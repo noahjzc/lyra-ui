@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 import {
   MultiSelect,
   RemoteSelect,
@@ -17,12 +17,41 @@ import {
   SelectValue,
 } from '../../src/components/data-input';
 
-if (!HTMLElement.prototype.hasPointerCapture) {
-  Object.defineProperty(HTMLElement.prototype, 'hasPointerCapture', {
+const elementPrototype = HTMLElement.prototype as {
+  hasPointerCapture?: (pointerId: number) => boolean;
+};
+const hasPointerCaptureWasOwn = Object.hasOwn(
+  elementPrototype,
+  'hasPointerCapture',
+);
+const hasPointerCaptureDescriptor = Object.getOwnPropertyDescriptor(
+  elementPrototype,
+  'hasPointerCapture',
+);
+const installedHasPointerCapture =
+  typeof elementPrototype.hasPointerCapture !== 'function';
+
+if (installedHasPointerCapture) {
+  Object.defineProperty(elementPrototype, 'hasPointerCapture', {
     configurable: true,
     value: () => false,
   });
 }
+
+afterAll(() => {
+  if (!installedHasPointerCapture) return;
+
+  if (hasPointerCaptureWasOwn && hasPointerCaptureDescriptor != null) {
+    Object.defineProperty(
+      elementPrototype,
+      'hasPointerCapture',
+      hasPointerCaptureDescriptor,
+    );
+    return;
+  }
+
+  delete elementPrototype.hasPointerCapture;
+});
 
 const statusOptions: SelectOption[] = [
   { label: '待跟进', value: 'pending' },
@@ -192,6 +221,37 @@ describe('Select', () => {
     expect(
       screen.queryByRole('option', { name: /王明/ }),
     ).not.toBeInTheDocument();
+  });
+
+  it('clears searchable SelectField without nested controls or opening its panel', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    const onValueChange = vi.fn();
+
+    render(
+      <SelectField
+        clearable
+        defaultValue="active"
+        onOpenChange={onOpenChange}
+        onValueChange={onValueChange}
+        options={statusOptions}
+        searchable
+        triggerAriaLabel="状态筛选"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', { name: '状态筛选' });
+    const clearButton = screen.getByRole('button', { name: '清空选择' });
+
+    expect(clearButton).toHaveAttribute('type', 'button');
+    expect(trigger).not.toContainElement(clearButton);
+    expect(trigger.querySelector('[role="button"][tabindex]')).toBeNull();
+
+    await user.click(clearButton);
+
+    expect(onValueChange).toHaveBeenCalledWith(undefined);
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
   it('loads RemoteSelect options and preserves selected option', async () => {

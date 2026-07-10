@@ -234,6 +234,7 @@ export const SelectField = React.forwardRef<HTMLDivElement, SelectFieldProps>(
               <span
                 className={cn(
                   'min-w-0 flex-1 truncate text-left',
+                  canClear && 'pr-10',
                   selectedOption == null &&
                     'font-medium text-ui-muted-foreground',
                 )}
@@ -241,35 +242,26 @@ export const SelectField = React.forwardRef<HTMLDivElement, SelectFieldProps>(
               >
                 {selectedOption?.label ?? placeholder}
               </span>
-              {canClear && (
-                // biome-ignore lint/a11y/useSemanticElements: 搜索型触发器需要整块作为 Popover Trigger，清空控件不能嵌套 button。
-                <span
-                  aria-label="清空选择"
-                  className="grid size-5 shrink-0 place-items-center rounded text-ui-muted-foreground transition-ui-state transition-ui-transform hover:bg-ui-muted hover:text-ui-foreground active:scale-95"
-                  data-slot="select-field-clear"
-                  onClick={event => {
-                    event.stopPropagation();
-                    setSelectedValue(undefined);
-                  }}
-                  onKeyDown={event => {
-                    if (event.key !== 'Enter' && event.key !== ' ') return;
-
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setSelectedValue(undefined);
-                  }}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <X aria-hidden="true" className="size-3.5" />
-                </span>
-              )}
               <ChevronDown
                 aria-hidden="true"
                 className="size-3.5 shrink-0 text-ui-muted-foreground transition-ui-transform group-data-[state=open]:rotate-180"
               />
             </button>
           </PopoverPrimitive.Trigger>
+          {canClear && (
+            <button
+              aria-label="清空选择"
+              className="absolute top-1/2 right-8 grid size-5 -translate-y-1/2 place-items-center rounded text-ui-muted-foreground transition-ui-state transition-ui-transform hover:bg-ui-muted hover:text-ui-foreground active:scale-95"
+              data-slot="select-field-clear"
+              onClick={event => {
+                event.stopPropagation();
+                setSelectedValue(undefined);
+              }}
+              type="button"
+            >
+              <X aria-hidden="true" className="size-3.5" />
+            </button>
+          )}
           <PopoverPrimitive.Portal>
             <PopoverPrimitive.Content
               align="start"
