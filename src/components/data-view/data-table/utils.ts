@@ -121,10 +121,12 @@ export function deriveColumnPinning<TData extends RowData>({
   return { left, right };
 }
 
-export function normalizeSelectableColumnPinning(
+export function getVisibleColumnPinning(
   columnPinning: ColumnPinningState,
   selectable: boolean,
 ): ColumnPinningState {
+  if (selectable) return columnPinning;
+
   const left = (columnPinning.left ?? []).filter(
     columnId => columnId !== '__select__',
   );
@@ -133,8 +135,35 @@ export function normalizeSelectableColumnPinning(
   );
 
   return {
-    left: selectable ? ['__select__', ...left] : left,
+    left,
     right,
+  };
+}
+
+function restoreHiddenSelectionPinning(
+  current: string[] | undefined,
+  next: string[] | undefined,
+) {
+  const selectionIndex = current?.indexOf('__select__') ?? -1;
+  const restored = (next ?? []).filter(columnId => columnId !== '__select__');
+
+  if (selectionIndex < 0) return restored;
+
+  restored.splice(Math.min(selectionIndex, restored.length), 0, '__select__');
+
+  return restored;
+}
+
+export function preserveHiddenSelectionPinning(
+  current: ColumnPinningState,
+  next: ColumnPinningState,
+  selectable: boolean,
+): ColumnPinningState {
+  if (selectable) return next;
+
+  return {
+    left: restoreHiddenSelectionPinning(current.left, next.left),
+    right: restoreHiddenSelectionPinning(current.right, next.right),
   };
 }
 

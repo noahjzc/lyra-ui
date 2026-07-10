@@ -23,7 +23,8 @@ import type { DataTableColumn, DataTableProps } from './types';
 import {
   deriveColumnPinning,
   getDensity,
-  normalizeSelectableColumnPinning,
+  getVisibleColumnPinning,
+  preserveHiddenSelectionPinning,
   resolveUpdater,
 } from './utils';
 
@@ -87,8 +88,11 @@ export function DataTable<TData extends RowData>({
     React.useState<RowSelectionState>(defaultRowSelection ?? {});
   const [internalColumnVisibility, setInternalColumnVisibility] =
     React.useState<VisibilityState>(defaultColumnVisibility ?? {});
+  // 内部保存可恢复的固定列意图，渲染时再过滤不可见的选择列。
   const [internalColumnPinning, setInternalColumnPinning] = React.useState(
-    () => defaultColumnPinning ?? deriveColumnPinning({ columns, selectable }),
+    () =>
+      defaultColumnPinning ??
+      deriveColumnPinning({ columns, selectable: true }),
   );
   const [internalCurrent, setInternalCurrent] = React.useState(
     pagination?.current ?? 1,
@@ -98,11 +102,7 @@ export function DataTable<TData extends RowData>({
   const effectiveColumnVisibility =
     columnVisibility ?? internalColumnVisibility;
   const effectiveColumnPinning =
-    columnPinning ??
-    normalizeSelectableColumnPinning(
-      internalColumnPinning,
-      selectable && defaultColumnPinning == null,
-    );
+    columnPinning ?? getVisibleColumnPinning(internalColumnPinning, selectable);
   const pageSize = pagination?.pageSize ?? Math.max(data.length, 1);
   const currentPage = pagination?.current ?? internalCurrent;
   const tablePagination = {
@@ -141,10 +141,15 @@ export function DataTable<TData extends RowData>({
     getRowId,
     getSortedRowModel: getSortedRowModel(),
     onColumnPinningChange: updater => {
-      const nextValue = resolveUpdater(updater, effectiveColumnPinning);
-
       if (columnPinning == null) {
-        setInternalColumnPinning(nextValue);
+        setInternalColumnPinning(current => {
+          const next = resolveUpdater(
+            updater,
+            getVisibleColumnPinning(current, selectable),
+          );
+
+          return preserveHiddenSelectionPinning(current, next, selectable);
+        });
       }
 
       onColumnPinningChange?.(updater);
