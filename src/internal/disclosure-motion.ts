@@ -79,6 +79,7 @@ export function useDisclosureMotion(
   presentKeysRef.current = presentKeys;
   visibleKeysRef.current = visibleKeys;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 保持 openKeys 内容变化时触发 effect。
   React.useEffect(() => {
     const currentOpenKeys = openKeysRef.current;
     const nextOpenKeys = createKeySet(currentOpenKeys);

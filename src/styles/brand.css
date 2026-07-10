@@ -18,9 +18,9 @@
   --ly-color-danger: #b91c1c;
   --ly-color-warning-bg: #fff7ed;
   --ly-color-warning-fg: #c2410c;
-  --ly-font-family-sans: "Microsoft YaHei", "PingFang SC",
-    "Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  --ly-font-family-sans:
+    "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
   --ly-radius-sm: 4px;
   --ly-radius-md: 6px;
   --ly-radius-lg: 7px;
