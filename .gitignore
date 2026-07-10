@@ -129,3 +129,6 @@ storybook-static
 # Test output directories
 test-output/
 **/test-output/
+
+# Local Git worktrees
+.worktrees/
