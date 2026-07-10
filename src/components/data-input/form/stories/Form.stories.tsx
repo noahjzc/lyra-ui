@@ -31,10 +31,21 @@ const levelOptions = [
   { label: 'C 级客户', value: 'c' },
 ];
 
+const customerTypeOptions = [
+  { label: '企业客户', value: 'enterprise' },
+  { label: '个人客户', value: 'individual' },
+  { label: '渠道客户', value: 'channel' },
+];
+
 const ownerOptions = [
   { label: '宋佳', value: 'songjia' },
   { label: '周明', value: 'zhouming' },
   { label: '林一', value: 'linyi' },
+];
+
+const statusOptions = [
+  { label: '正常', value: 'active' },
+  { label: '停用', value: 'inactive' },
 ];
 
 export const Overview: Story = {
@@ -85,6 +96,15 @@ export const Overview: Story = {
             >
               <Form.Control asChild>
                 <Input defaultValue="启明贸易" />
+              </Form.Control>
+            </Form.Item>
+            <Form.Item label="客户级别" name="level">
+              <Form.Control asChild>
+                <SelectField
+                  defaultValue="a"
+                  options={levelOptions}
+                  placeholder="请选择客户级别"
+                />
               </Form.Control>
             </Form.Item>
             <Form.Item
@@ -188,7 +208,10 @@ export const VerticalDrawer: Story = {
               required
             >
               <Form.Control asChild>
-                <SelectField options={levelOptions} placeholder="请选择" />
+                <SelectField
+                  options={customerTypeOptions}
+                  placeholder="请选择"
+                />
               </Form.Control>
             </Form.Item>
             <Form.Item
@@ -245,7 +268,7 @@ export const InlineSearch: Story = {
         </Form.Item>
         <Form.Item label="状态" name="status">
           <Form.Control asChild>
-            <SelectField options={levelOptions} placeholder="全部状态" />
+            <SelectField options={statusOptions} placeholder="全部状态" />
           </Form.Control>
         </Form.Item>
         <Form.Item label="负责人" name="filter-owner">
