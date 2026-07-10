@@ -29,6 +29,7 @@
     "test:visual": "playwright test tests/visual",
     "sync:exports": "node scripts/sync-package-exports.mjs",
     "verify:dist": "node scripts/verify-dist.mjs",
+    "pack:check": "pnpm pack --pack-destination .pack && node scripts/verify-tarball.mjs .pack/noah-ji-lyra-ui-0.1.0.tgz",
     "verify:consumer": "node scripts/verify-consumer.mjs",
     "verify:release": "node scripts/release-preflight.mjs",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm verify:dist && pnpm build-storybook",
