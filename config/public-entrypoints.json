@@ -1,0 +1,64 @@
+{
+  "general": [
+    "button",
+    "divider",
+    "flex",
+    "grid",
+    "icon",
+    "scroll-area",
+    "space",
+    "typography"
+  ],
+  "data-input": [
+    "cascader",
+    "checkbox",
+    "date-picker",
+    "form",
+    "input",
+    "radio",
+    "search-input",
+    "search-input-with-panel",
+    "search-suggestion-panel",
+    "select",
+    "switch",
+    "time-picker",
+    "upload"
+  ],
+  "data-view": [
+    "avatar",
+    "badge",
+    "card",
+    "collapse",
+    "data-table",
+    "description",
+    "empty",
+    "image",
+    "popover",
+    "statistic",
+    "tag",
+    "timeline",
+    "tooltip"
+  ],
+  "navigation": [
+    "breadcrumb",
+    "dropdown-menu",
+    "menu",
+    "pagination",
+    "steps",
+    "tabs"
+  ],
+  "feedback": [
+    "alert",
+    "dialog",
+    "drawer",
+    "message",
+    "modal",
+    "notification",
+    "popconfirm",
+    "progress",
+    "result",
+    "skeleton",
+    "spin",
+    "watermark"
+  ]
+}
