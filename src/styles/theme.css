@@ -558,6 +558,7 @@
   --ui-tooltip-border: #020617;
   --ui-tooltip-foreground: #ffffff;
   --ui-data-table-pinned-z-index: 1;
+  --ui-data-table-header-z-index: 2;
   --ui-data-table-pinned-header-z-index: 3;
   --ui-data-table-pinned-left-shadow: 10px 0 16px -13px rgba(15, 23, 42, 0.42);
   --ui-data-table-pinned-right-shadow: -10px 0 16px -13px rgba(15, 23, 42, 0.42);
@@ -732,6 +733,7 @@
   --ui-tooltip-border: #020617;
   --ui-tooltip-foreground: #ffffff;
   --ui-data-table-pinned-z-index: 1;
+  --ui-data-table-header-z-index: 2;
   --ui-data-table-pinned-header-z-index: 3;
   --ui-data-table-pinned-left-shadow: 10px 0 16px -13px rgba(0, 0, 0, 0.6);
   --ui-data-table-pinned-right-shadow: -10px 0 16px -13px rgba(0, 0, 0, 0.6);

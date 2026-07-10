@@ -111,7 +111,7 @@ export function DataTableHeader<TData extends RowData>({
     <thead
       className={cn(
         'bg-(--ui-data-table-header-background)',
-        stickyHeader && 'sticky top-0 z-[2]',
+        stickyHeader && 'sticky top-0 z-(--ui-data-table-header-z-index)',
       )}
     >
       {table.getHeaderGroups().map(headerGroup => (

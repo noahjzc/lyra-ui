@@ -84,7 +84,7 @@ function TimelineItemBody({
         {!isLast && <span className={timelineLineClassName} />}
         <span
           className={cn(
-            'relative z-[1] mt-[5px] shrink-0 rounded-full border-2',
+            'relative z-(--ui-layer-local-z-index) mt-[5px] shrink-0 rounded-full border-2',
             timelineDotClassName[status],
           )}
           data-slot="timeline-dot"
