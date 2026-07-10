@@ -1,27 +1,70 @@
 import { execFileSync } from 'node:child_process';
-import { cpSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { isAbsolute, resolve } from 'node:path';
+import { cpSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const requested = process.argv[2] ?? '.pack/noah-ji-lyra-ui-0.1.0.tgz';
-const spec = requested.endsWith('.tgz')
-  ? `file:${isAbsolute(requested) ? requested : resolve(requested)}`
-  : `@noah-ji/lyra-ui@${requested}`;
-const target = resolve('.tmp/consumer');
+const usage = 'Usage: verify-consumer.mjs <tarball.tgz> | --registry <version>';
 
-rmSync(target, { force: true, recursive: true });
-cpSync('fixtures/consumer', target, { recursive: true });
+export function parseConsumerArgs(args) {
+  if (args[0] === '--registry') {
+    if (args.length !== 2 || !args[1] || args[1].startsWith('-')) {
+      throw new Error(usage);
+    }
+    return { mode: 'registry', version: args[1] };
+  }
 
-const packagePath = resolve(target, 'package.json');
-const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
-packageJson.dependencies['@noah-ji/lyra-ui'] = spec;
-writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
-
-function run(command, args) {
-  execFileSync(command, args, { cwd: target, stdio: 'inherit' });
+  if (args.length !== 1 || !args[0].endsWith('.tgz')) {
+    throw new Error(usage);
+  }
+  return { mode: 'tarball', path: args[0] };
 }
 
-run('pnpm', ['install', '--no-frozen-lockfile']);
-run('pnpm', ['typecheck']);
-run('pnpm', ['build']);
-run('pnpm', ['test:cjs']);
-run('pnpm', ['test:private']);
+function isFile(path) {
+  try {
+    return statSync(path).isFile();
+  } catch {
+    return false;
+  }
+}
+
+export function resolveConsumerSpec(request, options = {}) {
+  if (request.mode === 'registry') {
+    return `@noah-ji/lyra-ui@${request.version}`;
+  }
+
+  const absolutePath = resolve(options.cwd ?? process.cwd(), request.path);
+  const pathIsFile = options.isFile ?? isFile;
+  if (!pathIsFile(absolutePath)) {
+    throw new Error(`Tarball does not exist or is not a file: ${absolutePath}`);
+  }
+  return `file:${absolutePath}`;
+}
+
+export function verifyConsumer(args) {
+  const spec = resolveConsumerSpec(parseConsumerArgs(args));
+  const target = resolve('.tmp/consumer');
+
+  rmSync(target, { force: true, recursive: true });
+  cpSync('fixtures/consumer', target, { recursive: true });
+
+  const packagePath = resolve(target, 'package.json');
+  const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
+  packageJson.dependencies['@noah-ji/lyra-ui'] = spec;
+  writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
+
+  function run(command, commandArgs) {
+    execFileSync(command, commandArgs, { cwd: target, stdio: 'inherit' });
+  }
+
+  run('pnpm', ['install', '--no-frozen-lockfile']);
+  run('pnpm', ['typecheck']);
+  run('pnpm', ['build']);
+  run('pnpm', ['test:cjs']);
+  run('pnpm', ['test:private']);
+}
+
+const isMain =
+  process.argv[1] &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
+if (isMain) verifyConsumer(process.argv.slice(2));
