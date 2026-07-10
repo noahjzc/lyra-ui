@@ -129,6 +129,62 @@ describe('Tag', () => {
     expect(staticRef.current).toBeInstanceOf(HTMLSpanElement);
   });
 
+  it('keeps component-controlled attributes when forwarding consumer props', () => {
+    const conflictingButtonProps = {
+      'aria-pressed': true,
+      'data-slot': 'consumer-tag',
+      type: 'submit',
+    };
+    const conflictingSpanProps = {
+      'aria-disabled': false,
+      'data-slot': 'consumer-tag',
+    };
+
+    render(
+      <>
+        <Tag checkable checked={false} {...conflictingButtonProps}>
+          A 级客户
+        </Tag>
+        <Tag disabled {...conflictingSpanProps}>
+          历史状态
+        </Tag>
+      </>,
+    );
+
+    const interactiveTag = screen.getByRole('button', { name: 'A 级客户' });
+    const staticTag = screen.getByText('历史状态').parentElement;
+
+    expect(interactiveTag).toHaveAttribute('aria-pressed', 'false');
+    expect(interactiveTag).toHaveAttribute('data-slot', 'tag');
+    expect(interactiveTag).toHaveAttribute('type', 'button');
+    expect(staticTag).toHaveAttribute('aria-disabled', 'true');
+    expect(staticTag).toHaveAttribute('data-slot', 'tag');
+  });
+
+  it('calls callback refs with tag elements and cleanup null', () => {
+    const buttonRef = vi.fn();
+    const spanRef = vi.fn();
+    const { unmount } = render(
+      <>
+        <Tag checkable ref={buttonRef}>
+          A 级客户
+        </Tag>
+        <Tag ref={spanRef}>历史状态</Tag>
+      </>,
+    );
+
+    const button = screen.getByRole('button', { name: 'A 级客户' });
+    const span = screen.getByText('历史状态').parentElement;
+
+    expect(buttonRef).toHaveBeenCalledWith(button);
+    expect(spanRef).toHaveBeenCalledWith(span);
+
+    unmount();
+
+    expect(buttonRef).toHaveBeenLastCalledWith(null);
+    expect(spanRef).toHaveBeenLastCalledWith(null);
+  });
+
   it('renders filter tag parts and removes with accessible label', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();

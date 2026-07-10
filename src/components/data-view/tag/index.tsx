@@ -188,6 +188,7 @@ export const TagBase = React.forwardRef<
     if (interactive) {
       return (
         <button
+          {...props}
           aria-pressed={checkable ? mergedChecked : undefined}
           className={classNames}
           data-slot="tag"
@@ -205,7 +206,6 @@ export const TagBase = React.forwardRef<
           ref={element => assignTagRef(ref, element)}
           style={resolvedStyle}
           type="button"
-          {...props}
         >
           {content}
         </button>
@@ -214,12 +214,12 @@ export const TagBase = React.forwardRef<
 
     return (
       <span
+        {...props}
         aria-disabled={disabled ? true : undefined}
         className={classNames}
         data-slot="tag"
         ref={element => assignTagRef(ref, element)}
         style={resolvedStyle}
-        {...props}
       >
         {content}
       </span>
