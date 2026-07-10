@@ -3,6 +3,7 @@ export * from './badge';
 export * from './card';
 export * from './collapse';
 export * from './description';
+export * from './data-table';
 export * from './empty';
 export * from './image';
 export * from './popover';

@@ -1,0 +1,70 @@
+.ly-data-table-cell-pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: var(--ui-data-table-pinned-z-index);
+  background: var(--ui-background);
+}
+
+.ly-data-table-cell-pinned-left-edge {
+  box-shadow:
+    inset -1px 0 0 var(--ui-data-table-pinned-divider),
+    var(--ui-data-table-pinned-left-shadow);
+}
+
+.ly-data-table-cell-pinned-right {
+  position: sticky;
+  right: 0;
+  z-index: var(--ui-data-table-pinned-z-index);
+  background: var(--ui-background);
+}
+
+.ly-data-table-cell-pinned-right-edge {
+  box-shadow:
+    inset 1px 0 0 var(--ui-data-table-pinned-divider),
+    var(--ui-data-table-pinned-right-shadow);
+}
+
+/* 表头固定列 z-index 提升，盖住 body 固定列 */
+th.ly-data-table-cell-pinned-left,
+th.ly-data-table-cell-pinned-right {
+  z-index: var(--ui-data-table-pinned-header-z-index);
+  background: var(--ui-data-table-header-background);
+}
+
+/* 渐变阴影带伪元素 */
+.ly-data-table-cell-pinned-left-edge::after {
+  position: absolute;
+  top: 0;
+  right: calc(-1 * var(--ui-data-table-pinned-fade-width));
+  bottom: -1px;
+  width: var(--ui-data-table-pinned-fade-width);
+  background: linear-gradient(
+    90deg,
+    var(--ui-data-table-pinned-fade-color),
+    transparent
+  );
+  content: "";
+  pointer-events: none;
+}
+
+.ly-data-table-cell-pinned-right-edge::before {
+  position: absolute;
+  top: 0;
+  bottom: -1px;
+  left: calc(-1 * var(--ui-data-table-pinned-fade-width));
+  width: var(--ui-data-table-pinned-fade-width);
+  background: linear-gradient(
+    270deg,
+    var(--ui-data-table-pinned-fade-color),
+    transparent
+  );
+  content: "";
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ly-data-table-cell-pinned-left,
+  .ly-data-table-cell-pinned-right {
+    transition: none;
+  }
+}
