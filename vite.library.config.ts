@@ -47,7 +47,6 @@ const runtimePackages = [
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    cssMinify: false,
     cssCodeSplit: false,
     emptyOutDir: true,
     lib: {

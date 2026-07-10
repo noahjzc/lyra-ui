@@ -289,12 +289,15 @@ export const VisualMatrix: Story = {
           <div className="grid gap-4">
             <ScrollArea className="h-32 rounded-md border border-ui-border">
               <div className="grid min-w-[720px] grid-cols-4 text-sm">
-                {Array.from({ length: 16 }, (_, index) => (
+                {Array.from(
+                  { length: 16 },
+                  (_, index) => `客户记录 ${index + 1}`,
+                ).map(record => (
                   <div
                     className="border-b border-ui-border px-3 py-2"
-                    key={index}
+                    key={record}
                   >
-                    客户记录 {index + 1}
+                    {record}
                   </div>
                 ))}
               </div>

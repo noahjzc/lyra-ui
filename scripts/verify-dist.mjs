@@ -30,12 +30,11 @@ for (const declaration of declarations) {
 }
 
 const css = readFileSync('dist/styles.css', 'utf8');
-for (const token of [
-  '--ui-background',
-  '[data-theme="dark"]',
-  '.ly-data-table-cell-pinned-left',
-]) {
+for (const token of ['--ui-background', '.ly-data-table-cell-pinned-left']) {
   if (!css.includes(token)) throw new Error(`Missing CSS contract: ${token}`);
+}
+if (!/\[data-theme=(?:"dark"|'dark'|dark)\]/.test(css)) {
+  throw new Error('Missing CSS contract: [data-theme="dark"]');
 }
 
 console.log('dist contract verified');
