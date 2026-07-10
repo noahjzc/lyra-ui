@@ -77,6 +77,17 @@ function isControlledChecked(checked: TagProps['checked']) {
   return checked != null;
 }
 
+function assignTagRef(
+  ref: React.ForwardedRef<HTMLButtonElement | HTMLSpanElement>,
+  element: HTMLButtonElement | HTMLSpanElement | null,
+) {
+  if (typeof ref === 'function') {
+    ref(element);
+  } else if (ref != null) {
+    ref.current = element;
+  }
+}
+
 function TagContent({
   children,
   closeLabel,
@@ -117,7 +128,10 @@ function TagContent({
   );
 }
 
-export const TagBase = React.forwardRef<HTMLSpanElement, TagProps>(
+export const TagBase = React.forwardRef<
+  HTMLButtonElement | HTMLSpanElement,
+  TagProps
+>(
   (
     {
       checkable = false,
@@ -188,8 +202,10 @@ export const TagBase = React.forwardRef<HTMLSpanElement, TagProps>(
             }
             onCheckedChange?.(nextChecked);
           }}
+          ref={element => assignTagRef(ref, element)}
           style={resolvedStyle}
           type="button"
+          {...props}
         >
           {content}
         </button>
@@ -201,7 +217,7 @@ export const TagBase = React.forwardRef<HTMLSpanElement, TagProps>(
         aria-disabled={disabled ? true : undefined}
         className={classNames}
         data-slot="tag"
-        ref={ref}
+        ref={element => assignTagRef(ref, element)}
         style={resolvedStyle}
         {...props}
       >

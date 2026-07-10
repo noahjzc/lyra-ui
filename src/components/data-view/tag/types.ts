@@ -14,7 +14,10 @@ export type TagSize = 'compact' | 'large' | 'middle';
 export type TagVariant = 'category' | 'filter' | 'status';
 
 export interface TagProps
-  extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'color' | 'onClick'> {
+  extends Omit<
+    React.HTMLAttributes<HTMLButtonElement | HTMLSpanElement>,
+    'color' | 'onClick'
+  > {
   checkable?: boolean;
   checked?: boolean;
   children?: React.ReactNode;

@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Tag } from '../../src/components/data-view';
 
@@ -88,6 +89,44 @@ describe('Tag', () => {
 
     expect(tag).toHaveAttribute('aria-pressed', 'false');
     expect(onCheckedChange).toHaveBeenCalledWith(false);
+  });
+
+  it('forwards public attributes, keyboard handlers and refs for both tag elements', () => {
+    const onKeyDown = vi.fn();
+    const interactiveRef = createRef<HTMLButtonElement | HTMLSpanElement>();
+    const staticRef = createRef<HTMLButtonElement | HTMLSpanElement>();
+
+    render(
+      <>
+        <Tag
+          aria-label="客户等级"
+          checkable
+          data-owner="sales"
+          id="customer-tier"
+          onKeyDown={onKeyDown}
+          ref={interactiveRef}
+        >
+          A 级客户
+        </Tag>
+        <Tag aria-label="静态标签" data-owner="crm" ref={staticRef}>
+          历史状态
+        </Tag>
+      </>,
+    );
+
+    const interactiveTag = screen.getByRole('button', { name: '客户等级' });
+    const staticTag = screen.getByLabelText('静态标签');
+
+    expect(interactiveTag).toHaveAttribute('data-owner', 'sales');
+    expect(interactiveTag).toHaveAttribute('id', 'customer-tier');
+    fireEvent.keyDown(interactiveTag, { key: 'Enter' });
+    expect(onKeyDown).toHaveBeenCalledTimes(1);
+    expect(interactiveRef.current).toBe(interactiveTag);
+    expect(interactiveRef.current).toBeInstanceOf(HTMLButtonElement);
+
+    expect(staticTag).toHaveAttribute('data-owner', 'crm');
+    expect(staticRef.current).toBe(staticTag);
+    expect(staticRef.current).toBeInstanceOf(HTMLSpanElement);
   });
 
   it('renders filter tag parts and removes with accessible label', async () => {
