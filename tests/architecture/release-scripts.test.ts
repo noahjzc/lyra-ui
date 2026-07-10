@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   assertVersionIsUnpublished,
   isNpmNotFoundError,
@@ -10,11 +9,35 @@ import {
   parseConsumerArgs,
   resolveConsumerSpec,
 } from '../../scripts/verify-consumer.mjs';
-import { parseRegistryVersion } from '../../scripts/verify-registry.mjs';
+import {
+  normalizeGithubRepository,
+  parseRegistryVersion,
+  type RegistryExecutionOptions,
+  type RegistryExecutor,
+  verifyRegistry,
+} from '../../scripts/verify-registry.mjs';
 import {
   assertTarballEntries,
   isAllowedTarballEntry,
 } from '../../scripts/verify-tarball.mjs';
+
+const defaultRegistryExecute = vi.hoisted(() =>
+  vi.fn(() => {
+    throw new Error('default registry executor must not run in tests');
+  }),
+);
+
+vi.mock('node:child_process', async importOriginal => {
+  const actual = await importOriginal<typeof import('node:child_process')>();
+  const mocked = {
+    ...actual,
+    execFileSync: defaultRegistryExecute,
+  };
+  return {
+    ...mocked,
+    default: mocked,
+  };
+});
 
 const requiredEntries = [
   'package/package.json',
@@ -47,6 +70,46 @@ const invalidRegistryVersions = [
   'git+https://github.com/noahjzc/lyra-ui.git',
   'https://registry.npmjs.org/package.tgz',
 ];
+const registryVersion = '0.2.0';
+const registryViewArgs = [
+  'view',
+  `@noah-ji/lyra-ui@${registryVersion}`,
+  'name',
+  'version',
+  'license',
+  'dist-tags.latest',
+  'dist.integrity',
+  'repository.url',
+  '--json',
+];
+const validRegistryMetadata = {
+  name: '@noah-ji/lyra-ui',
+  version: registryVersion,
+  license: 'MIT',
+  'dist-tags.latest': registryVersion,
+  'dist.integrity': 'sha512-example-integrity',
+  'repository.url': 'git+https://github.com/noahjzc/lyra-ui.git',
+};
+
+interface RegistryCall {
+  file: string;
+  args: readonly string[];
+  options: RegistryExecutionOptions;
+}
+
+function createRegistryExecutor(
+  npmResult: string | Error,
+  calls: RegistryCall[],
+): RegistryExecutor {
+  return (file, args, options) => {
+    calls.push({ file, args: [...args], options });
+    if (file === 'npm') {
+      if (npmResult instanceof Error) throw npmResult;
+      return npmResult;
+    }
+    return Buffer.alloc(0);
+  };
+}
 
 describe('tarball entry contract', () => {
   it.each(requiredEntries)('accepts public package entry %s', entry => {
@@ -129,8 +192,35 @@ describe('consumer arguments', () => {
 });
 
 describe('registry verification', () => {
+  beforeEach(() => {
+    defaultRegistryExecute.mockClear();
+  });
+
   it.each(validRegistryVersions)('accepts exact version %s', version => {
     expect(parseRegistryVersion([version])).toBe(version);
+  });
+
+  it.each([
+    ['git+https://github.com/noahjzc/lyra-ui.git', 'noahjzc/lyra-ui'],
+    ['https://github.com/noahjzc/lyra-ui', 'noahjzc/lyra-ui'],
+    ['https://github.com/noahjzc/lyra-ui.git', 'noahjzc/lyra-ui'],
+    ['git@github.com:noahjzc/lyra-ui.git', 'noahjzc/lyra-ui'],
+    ['https://github.com/noahjzc/lyra-ui-fork.git', 'noahjzc/lyra-ui-fork'],
+    ['https://github.com/another-owner/lyra-ui.git', 'another-owner/lyra-ui'],
+  ])('normalizes GitHub repository form %s', (repository, expected) => {
+    expect(normalizeGithubRepository(repository)).toBe(expected);
+  });
+
+  it.each([
+    null,
+    { url: 'https://github.com/noahjzc/lyra-ui.git' },
+    'http://github.com/noahjzc/lyra-ui.git',
+    'https://gitlab.com/noahjzc/lyra-ui.git',
+    'https://github.com/noahjzc/lyra-ui/tree/main',
+    'https://github.com/noahjzc/lyra-ui.git?ref=main',
+    'git@github.com:noahjzc/lyra-ui/extra.git',
+  ])('rejects invalid GitHub repository value %j', repository => {
+    expect(normalizeGithubRepository(repository)).toBeNull();
   });
 
   it.each(invalidRegistryVersions)('rejects unsafe version %s', version => {
@@ -148,12 +238,161 @@ describe('registry verification', () => {
     );
   });
 
-  it('invokes the consumer verifier in explicit registry mode', () => {
-    const source = readFileSync('scripts/verify-registry.mjs', 'utf8');
+  it('queries complete metadata before verifying the registry consumer', () => {
+    const calls: RegistryCall[] = [];
 
-    expect(source).toContain(
-      "['scripts/verify-consumer.mjs', '--registry', version]",
+    verifyRegistry(
+      registryVersion,
+      createRegistryExecutor(JSON.stringify(validRegistryMetadata), calls),
     );
+
+    expect(calls).toEqual([
+      {
+        file: 'npm',
+        args: registryViewArgs,
+        options: { encoding: 'utf8' },
+      },
+      {
+        file: 'node',
+        args: ['scripts/verify-consumer.mjs', '--registry', registryVersion],
+        options: { stdio: 'inherit' },
+      },
+    ]);
+    expect(defaultRegistryExecute).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['name', { name: '@noah-ji/lyra-ui-fork' }, 'registry name mismatch'],
+    ['version', { version: '0.2.1' }, 'registry version mismatch'],
+    ['license', { license: 'Apache-2.0' }, 'registry license mismatch'],
+    [
+      'dist-tags.latest',
+      { 'dist-tags.latest': '0.1.0' },
+      'registry latest tag mismatch',
+    ],
+    [
+      'dist.integrity',
+      { 'dist.integrity': '   ' },
+      'registry integrity missing',
+    ],
+    [
+      'repository.url',
+      { 'repository.url': 'https://github.com/noahjzc/lyra-ui-fork.git' },
+      'registry repository mismatch',
+    ],
+  ])(
+    'rejects invalid %s metadata before consumer verification',
+    (_, override, message) => {
+      const calls: RegistryCall[] = [];
+      const metadata = { ...validRegistryMetadata, ...override };
+
+      expect(() =>
+        verifyRegistry(
+          registryVersion,
+          createRegistryExecutor(JSON.stringify(metadata), calls),
+        ),
+      ).toThrow(message);
+      expect(calls).toEqual([
+        {
+          file: 'npm',
+          args: registryViewArgs,
+          options: { encoding: 'utf8' },
+        },
+      ]);
+    },
+  );
+
+  it.each([
+    'git+https://github.com/noahjzc/lyra-ui.git',
+    'https://github.com/noahjzc/lyra-ui',
+    'https://github.com/noahjzc/lyra-ui.git',
+    'git@github.com:noahjzc/lyra-ui.git',
+  ])('accepts npm repository form %s', repository => {
+    const calls: RegistryCall[] = [];
+    const metadata = {
+      ...validRegistryMetadata,
+      'repository.url': repository,
+    };
+
+    expect(() =>
+      verifyRegistry(
+        registryVersion,
+        createRegistryExecutor(JSON.stringify(metadata), calls),
+      ),
+    ).not.toThrow();
+    expect(calls).toHaveLength(2);
+  });
+
+  it.each([
+    'https://github.com/noahjzc/lyra-ui-fork.git',
+    'https://github.com/another-owner/lyra-ui.git',
+    'https://gitlab.com/noahjzc/lyra-ui.git',
+    'https://github.com/noahjzc/lyra-ui/tree/main',
+    'git@github.com:noahjzc/lyra-ui/extra.git',
+  ])('rejects non-canonical repository %s', repository => {
+    const calls: RegistryCall[] = [];
+    const metadata = {
+      ...validRegistryMetadata,
+      'repository.url': repository,
+    };
+
+    expect(() =>
+      verifyRegistry(
+        registryVersion,
+        createRegistryExecutor(JSON.stringify(metadata), calls),
+      ),
+    ).toThrow('registry repository mismatch');
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.file).toBe('npm');
+  });
+
+  it.each([
+    Object.assign(new Error('registry authentication failed'), {
+      code: 'E401',
+    }),
+    Object.assign(new Error('registry network failed'), {
+      code: 'ENETUNREACH',
+    }),
+  ])('rethrows npm execution failure unchanged', failure => {
+    const calls: RegistryCall[] = [];
+    let thrown: unknown;
+
+    try {
+      verifyRegistry(registryVersion, createRegistryExecutor(failure, calls));
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBe(failure);
+    expect(calls).toEqual([
+      {
+        file: 'npm',
+        args: registryViewArgs,
+        options: { encoding: 'utf8' },
+      },
+    ]);
+  });
+
+  it.each([
+    ['malformed JSON', '{', 'registry metadata is not valid JSON'],
+    [
+      'null metadata',
+      JSON.stringify(null),
+      'registry metadata must be an object',
+    ],
+    [
+      'array metadata',
+      JSON.stringify([]),
+      'registry metadata must be an object',
+    ],
+  ])('rejects %s before consumer verification', (_, output, message) => {
+    const calls: RegistryCall[] = [];
+
+    expect(() =>
+      verifyRegistry(registryVersion, createRegistryExecutor(output, calls)),
+    ).toThrow(message);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.file).toBe('npm');
   });
 });
 
