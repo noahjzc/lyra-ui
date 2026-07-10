@@ -1,6 +1,15 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { dirname, relative, resolve, sep } from 'node:path';
+import ts from 'typescript';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import * as publicApi from '../../src';
+import type {
+  PaginationProps,
+  TabsContentProps,
+  TabsListProps,
+  TabsProps,
+  TabsTriggerProps,
+} from '../../src/index';
 
 const requiredExports = [
   'Button',
@@ -58,6 +67,53 @@ const privateRuntimeExports = [
   'shouldPointPopoverArrowAtCenter',
 ];
 
+const rootEntryPath = resolve('src/index.ts');
+
+function normalizePath(path: string) {
+  return relative(process.cwd(), resolve(path)).split(sep).join('/');
+}
+
+const privateModuleTargets = [
+  'src/overlay',
+  'src/internal',
+  'src/components/data-input/time-columns',
+  'src/components/data-view/popover/variants',
+].map(normalizePath);
+
+function rootExportTargets() {
+  const source = readFileSync(rootEntryPath, 'utf8');
+  const sourceFile = ts.createSourceFile(
+    rootEntryPath,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+
+  return sourceFile.statements.flatMap(statement => {
+    if (!ts.isExportDeclaration(statement)) return [];
+    if (
+      !statement.moduleSpecifier ||
+      !ts.isStringLiteral(statement.moduleSpecifier)
+    ) {
+      return [];
+    }
+
+    return [
+      normalizePath(
+        resolve(dirname(rootEntryPath), statement.moduleSpecifier.text),
+      ),
+    ];
+  });
+}
+
+function targetsPrivateModule(moduleTarget: string, privateTarget: string) {
+  return (
+    moduleTarget === privateTarget ||
+    moduleTarget.startsWith(`${privateTarget}/`)
+  );
+}
+
 describe('root public API contract', () => {
   it('exposes representative component families and required navigation exports', () => {
     for (const exportName of requiredExports) {
@@ -77,16 +133,28 @@ describe('root public API contract', () => {
     }
   });
 
-  it('does not reference prohibited implementation modules from the root barrel', () => {
-    const source = readFileSync('src/index.ts', 'utf8');
+  it('exports required navigation prop types from the root API', () => {
+    expectTypeOf<PaginationProps['total']>().toEqualTypeOf<number>();
+    expectTypeOf<TabsContentProps['value']>().toEqualTypeOf<string>();
+    expectTypeOf<TabsListProps['variant']>().toEqualTypeOf<
+      'line' | 'segment' | 'card' | 'cache' | undefined
+    >();
+    expectTypeOf<TabsProps['size']>().toEqualTypeOf<
+      'small' | 'middle' | 'large' | undefined
+    >();
+    expectTypeOf<TabsTriggerProps['size']>().toEqualTypeOf<
+      'small' | 'middle' | 'large' | undefined
+    >();
+  });
 
-    for (const path of [
-      './overlay',
-      './internal',
-      'time-columns',
-      'popover/variants',
-    ]) {
-      expect(source, `src/index.ts references ${path}`).not.toContain(path);
+  it('does not export prohibited implementation modules from the root barrel', () => {
+    for (const moduleTarget of rootExportTargets()) {
+      for (const privateTarget of privateModuleTargets) {
+        expect(
+          targetsPrivateModule(moduleTarget, privateTarget),
+          `src/index.ts exports ${moduleTarget} through ${privateTarget}`,
+        ).toBe(false);
+      }
     }
   });
 });
