@@ -2,4 +2,8 @@ export * from './checkbox';
 export * from './form';
 export * from './input';
 export * from './radio';
+export * from './search-input';
+export * from './search-input-with-panel';
+export * from './search-suggestion-panel';
+export * from './select';
 export * from './switch';
