@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Plus, X } from 'lucide-react';
-import { Button } from '../../../general';
-import { Input } from '../../index';
+import { Button } from '../../../general/button';
+import { Input } from '../../input';
+import { SelectField } from '../../select';
+import { Upload } from '../../upload';
 import { Form } from '../index';
 
 const meta = {
@@ -22,6 +24,18 @@ const panelClassName =
   'grid w-full max-w-[1180px] gap-4 rounded-lg border border-ui-border bg-ui-background p-4 shadow-sm';
 const drawerPanelClassName =
   'grid w-full max-w-[880px] gap-4 rounded-lg border border-ui-border bg-ui-background p-4 shadow-sm';
+
+const levelOptions = [
+  { label: 'A 级客户', value: 'a' },
+  { label: 'B 级客户', value: 'b' },
+  { label: 'C 级客户', value: 'c' },
+];
+
+const ownerOptions = [
+  { label: '宋佳', value: 'songjia' },
+  { label: '周明', value: 'zhouming' },
+  { label: '林一', value: 'linyi' },
+];
 
 export const Overview: Story = {
   args: {},
@@ -85,7 +99,11 @@ export const Overview: Story = {
             </Form.Item>
             <Form.Item label="负责人" name="owner">
               <Form.Control asChild>
-                <Input defaultValue="宋佳" placeholder="请选择负责人" />
+                <SelectField
+                  defaultValue="songjia"
+                  options={ownerOptions}
+                  placeholder="请选择负责人"
+                />
               </Form.Control>
             </Form.Item>
           </Form.Grid>
@@ -170,7 +188,7 @@ export const VerticalDrawer: Story = {
               required
             >
               <Form.Control asChild>
-                <Input placeholder="请选择企业客户、个人客户或渠道客户" />
+                <SelectField options={levelOptions} placeholder="请选择" />
               </Form.Control>
             </Form.Item>
             <Form.Item
@@ -227,12 +245,12 @@ export const InlineSearch: Story = {
         </Form.Item>
         <Form.Item label="状态" name="status">
           <Form.Control asChild>
-            <Input placeholder="全部状态" />
+            <SelectField options={levelOptions} placeholder="全部状态" />
           </Form.Control>
         </Form.Item>
         <Form.Item label="负责人" name="filter-owner">
           <Form.Control asChild>
-            <Input placeholder="全部负责人" />
+            <SelectField options={ownerOptions} placeholder="全部负责人" />
           </Form.Control>
         </Form.Item>
         <Form.Footer alignWithControls={false}>
@@ -313,14 +331,16 @@ export const UploadInForm: Story = {
     <div className={canvasClassName}>
       <Form className={drawerPanelClassName} layout="vertical">
         <Form.Item
-          extra="支持 PNG / JPG，单个文件不超过 10 MB。"
+          extra="图片缩略图默认 96px，支持预览、删除、上传中和失败重试。"
           label="客户附件"
           name="files"
           span="full"
         >
-          <Form.Control asChild>
-            <Input accept="image/*" type="file" />
-          </Form.Control>
+          <Upload
+            accept="image/*"
+            hint="支持 PNG / JPG，单个文件不超过 10 MB。"
+            variant="picture"
+          />
         </Form.Item>
       </Form>
     </div>

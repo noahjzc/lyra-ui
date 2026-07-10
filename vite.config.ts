@@ -1,18 +1,7 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [react()],
-  css: {
-    preprocessorOptions: {
-      less: {},
-    },
-  },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: './vitest.setup.ts',
-    include: ['stories/**/*.test.{ts,tsx}'],
-  },
+  plugins: [react(), tailwindcss()],
 });

@@ -1,0 +1,20 @@
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  font-family: var(--font-family-base);
+  color: var(--ui-foreground);
+  background: var(--ui-muted);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.lyra-story-shell {
+  min-width: min(1120px, calc(100vw - 32px));
+  padding: 16px;
+}

@@ -1,0 +1,20 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Primitives/Introduction" />
+
+# CRM 基础组件
+
+基础组件服务于 CRM 的高密度运营界面，优先保证扫描效率、状态清晰和键盘可达。
+
+## 视觉验证重点
+
+- **密度**：控件高度、间距和文字尺寸保持工作台级别，不做营销式放大。
+- **状态**：默认、悬停、按压、聚焦、禁用、只读和错误态都需要可辨认。
+- **语义**：状态色按 `success`、`warning`、`destructive`、`processing`、`assist` 使用。
+- **浮层**：Dialog、Drawer、Popover、DropdownMenu、Select、Tooltip 使用 Radix 状态和轻量过渡。
+- **可维护性**：Story 应覆盖视觉矩阵和典型业务组合，避免只保留单个 happy path。
+
+## 落地边界
+
+新页面优先从这里组合，不在业务页面里重新写同类按钮、输入框、浮层和分页样式。
+业务特定的字段、接口和流程应放到 `src/features` 或 `src/pages`。

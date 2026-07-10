@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import * as React from 'react';
 import { fn } from 'storybook/test';
-import { Button } from '../../../general';
+import { CheckboxField } from '../../../data-input/checkbox';
+import { Input } from '../../../data-input/input';
+import { Button } from '../../../general/button';
 import {
   Popover,
   PopoverBody,
@@ -125,13 +127,12 @@ export const ColumnSettings: Story = {
             '最近跟进',
             '风险状态',
           ].map((label, index) => (
-            <label
-              className="flex min-h-8 items-center justify-between rounded-[5px] px-2 text-sm hover:bg-ui-muted"
+            <CheckboxField
+              className="min-h-8 justify-between rounded-[5px] px-2 text-sm hover:bg-ui-muted"
+              defaultChecked={index < 3}
               key={label}
-            >
-              {label}
-              <input defaultChecked={index < 3} type="checkbox" />
-            </label>
+              label={label}
+            />
           ))}
         </PopoverBody>
         <PopoverFooter>
@@ -230,11 +231,7 @@ export const Boundary: Story = {
             <span>可放少量操作和状态信息。</span>
             <span>完整编辑流程进入 Drawer。</span>
           </div>
-          <input
-            aria-label="快速搜索"
-            className="h-8 rounded-[5px] border border-ui-border bg-ui-background px-2 text-sm"
-            placeholder="快速搜索菜单"
-          />
+          <Input aria-label="快速搜索" placeholder="快速搜索菜单" />
         </PopoverBody>
       </PopoverContent>
     </Popover>

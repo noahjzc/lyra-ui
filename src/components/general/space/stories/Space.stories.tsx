@@ -1,37 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Filter, MoreHorizontal, RefreshCw, Save } from 'lucide-react';
+import { Badge } from '../../../data-view/badge';
 import { Button, IconButton } from '../../button';
 import { Divider } from '../../divider';
 import { Space } from '../index';
-
-type StoryBadgeVariant =
-  | 'assist'
-  | 'neutral'
-  | 'processing'
-  | 'success'
-  | 'warning';
-
-const storyBadgeClassNames: Record<StoryBadgeVariant, string> = {
-  assist: 'bg-ui-assist/10 text-ui-assist',
-  neutral: 'bg-ui-muted text-ui-foreground',
-  processing: 'bg-ui-processing/10 text-ui-processing',
-  success: 'bg-ui-success/10 text-ui-success',
-  warning: 'bg-ui-warning/10 text-ui-warning',
-};
-
-const StoryBadge = ({
-  children,
-  variant = 'neutral',
-}: {
-  children: React.ReactNode;
-  variant?: StoryBadgeVariant;
-}) => (
-  <span
-    className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium leading-none transition-ui-state ${storyBadgeClassNames[variant]}`}
-  >
-    {children}
-  </span>
-);
 
 const meta = {
   title: 'Primitives/General/Space',
@@ -100,9 +72,9 @@ export const Sizes: Story = {
             gap {size}
           </span>
           <Space size={size}>
-            <StoryBadge>负责人</StoryBadge>
-            <StoryBadge variant="success">活跃客户</StoryBadge>
-            <StoryBadge variant="warning">待补资料</StoryBadge>
+            <Badge>负责人</Badge>
+            <Badge variant="success">活跃客户</Badge>
+            <Badge variant="warning">待补资料</Badge>
           </Space>
         </div>
       ))}
@@ -118,11 +90,11 @@ export const AlignWrapAndSeparator: Story = {
           wrap with tuple gap
         </span>
         <Space size={[8, 8]} wrap>
-          <StoryBadge>负责人 等于 周启明</StoryBadge>
-          <StoryBadge>客户等级 包含 A/B</StoryBadge>
-          <StoryBadge variant="warning">商机金额 大于 ¥30,000</StoryBadge>
-          <StoryBadge variant="processing">下次跟进 本周</StoryBadge>
-          <StoryBadge variant="assist">AI 推荐客户</StoryBadge>
+          <Badge>负责人 等于 周启明</Badge>
+          <Badge>客户等级 包含 A/B</Badge>
+          <Badge variant="warning">商机金额 大于 ¥30,000</Badge>
+          <Badge variant="processing">下次跟进 本周</Badge>
+          <Badge variant="assist">AI 推荐客户</Badge>
         </Space>
       </div>
 
@@ -184,9 +156,9 @@ export const CrmScenes: Story = {
       <div className="grid gap-3 rounded-lg border border-ui-border bg-ui-background p-4">
         <strong className="text-sm text-ui-foreground">筛选条件</strong>
         <Space size={[8, 8]} wrap>
-          <StoryBadge>负责人 等于 周启明</StoryBadge>
-          <StoryBadge>客户等级 包含 A/B</StoryBadge>
-          <StoryBadge variant="warning">商机金额 大于 ¥30,000</StoryBadge>
+          <Badge>负责人 等于 周启明</Badge>
+          <Badge>客户等级 包含 A/B</Badge>
+          <Badge variant="warning">商机金额 大于 ¥30,000</Badge>
           <Button size="small" variant="text">
             清空全部
           </Button>
