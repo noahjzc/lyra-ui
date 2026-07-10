@@ -1,0 +1,49 @@
+:root {
+  --ly-color-brand-primary: #2563eb;
+  --ly-color-brand-primary-hover: #1d4ed8;
+  --ly-color-brand-primary-strong: #1e3a8a;
+  --ly-color-accent-cyan: #0e7490;
+  --ly-color-accent-cyan-strong: #155e75;
+  --ly-color-accent-cyan-soft: #ecfeff;
+  --ly-color-accent-cyan-subtle: #cffafe;
+  --ly-color-surface: #ffffff;
+  --ly-color-surface-muted: #f8fafc;
+  --ly-color-surface-subtle: #fcfcfd;
+  --ly-color-border: #e2e8f0;
+  --ly-color-border-subtle: #f1f5f9;
+  --ly-color-text-primary: #1e293b;
+  --ly-color-text-secondary: #334155;
+  --ly-color-text-muted: #64748b;
+  --ly-color-text-subtle: #94a3b8;
+  --ly-color-danger: #b91c1c;
+  --ly-color-warning-bg: #fff7ed;
+  --ly-color-warning-fg: #c2410c;
+  --ly-font-family-sans: "Microsoft YaHei", "PingFang SC",
+    "Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --ly-radius-sm: 4px;
+  --ly-radius-md: 6px;
+  --ly-radius-lg: 7px;
+  --ly-motion-duration-fast: 120ms;
+  --ly-motion-duration-base: 180ms;
+  --ly-motion-easing-standard: ease;
+}
+
+[data-theme="dark"] {
+  --ly-color-accent-cyan: #22d3ee;
+  --ly-color-accent-cyan-strong: #67e8f9;
+  --ly-color-accent-cyan-soft: rgba(34, 211, 238, 0.14);
+  --ly-color-accent-cyan-subtle: rgba(34, 211, 238, 0.2);
+  --ly-color-surface: #020617;
+  --ly-color-surface-muted: #0f172a;
+  --ly-color-surface-subtle: #111827;
+  --ly-color-border: #1e293b;
+  --ly-color-border-subtle: #334155;
+  --ly-color-text-primary: #f8fafc;
+  --ly-color-text-secondary: #e2e8f0;
+  --ly-color-text-muted: #94a3b8;
+  --ly-color-text-subtle: #64748b;
+  --ly-color-danger: #f87171;
+  --ly-color-warning-bg: rgba(251, 146, 60, 0.16);
+  --ly-color-warning-fg: #fdba74;
+}
