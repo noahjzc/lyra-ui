@@ -132,3 +132,9 @@ test-output/
 
 # Local Git worktrees
 .worktrees/
+.pack/
+.tmp/
+output/
+playwright-report/
+test-results/
+storybook-static/

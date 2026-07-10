@@ -1,26 +1,17 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "outDir": "./dist",
+    "noEmit": true,
+    "types": ["vite/client", "vitest/globals", "node"]
   },
   "include": [
-    "components/**/*.ts",
-    "components/**/*.tsx",
-    "stories/**/*.ts",
-    "stories/**/*.tsx",
+    "src",
+    "tests",
     ".storybook",
-    "vite-env.d.ts"
+    "vite.config.ts",
+    "vite.library.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
   ],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["dist", "storybook-static", "coverage", ".pack", ".tmp"]
 }
