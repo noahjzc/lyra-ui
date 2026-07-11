@@ -16,4 +16,8 @@ export declare function assertVersionIsUnpublished(
   exec?: NpmViewExecutor,
 ): void;
 
+export declare function withoutNpmDryRun(
+  environment?: NodeJS.ProcessEnv,
+): NodeJS.ProcessEnv;
+
 export declare function releasePreflight(): void;

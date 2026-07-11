@@ -30,6 +30,13 @@ export function assertVersionIsUnpublished(packageJson, exec = execFileSync) {
   throw new Error(`${packageJson.name}@${packageJson.version} already exists`);
 }
 
+export function withoutNpmDryRun(environment = process.env) {
+  const sanitizedEnvironment = { ...environment };
+  delete sanitizedEnvironment.npm_config_dry_run;
+  delete sanitizedEnvironment.NPM_CONFIG_DRY_RUN;
+  return sanitizedEnvironment;
+}
+
 export function releasePreflight() {
   const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
   const status = execFileSync('git', ['status', '--porcelain'], {
@@ -38,9 +45,16 @@ export function releasePreflight() {
   if (status.trim()) throw new Error('release requires a clean git worktree');
 
   assertVersionIsUnpublished(packageJson);
-  execFileSync('pnpm', ['verify'], { stdio: 'inherit' });
-  execFileSync('pnpm', ['pack:check'], { stdio: 'inherit' });
-  execFileSync('pnpm', ['verify:consumer'], { stdio: 'inherit' });
+  const environment = withoutNpmDryRun();
+  execFileSync('pnpm', ['verify'], { env: environment, stdio: 'inherit' });
+  execFileSync('pnpm', ['pack:check'], {
+    env: environment,
+    stdio: 'inherit',
+  });
+  execFileSync('pnpm', ['verify:consumer'], {
+    env: environment,
+    stdio: 'inherit',
+  });
 }
 
 const isMain =

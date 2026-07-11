@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   assertVersionIsUnpublished,
   isNpmNotFoundError,
+  withoutNpmDryRun,
 } from '../../scripts/release-preflight.mjs';
 import {
   isExactSemver,
@@ -397,6 +398,16 @@ describe('registry verification', () => {
 });
 
 describe('release registry lookup errors', () => {
+  it('does not leak an outer npm publish dry-run into nested pack checks', () => {
+    expect(
+      withoutNpmDryRun({
+        npm_config_dry_run: 'true',
+        NPM_CONFIG_DRY_RUN: 'true',
+        KEEP_ME: 'yes',
+      }),
+    ).toEqual({ KEEP_ME: 'yes' });
+  });
+
   it('treats npm E404 as an unpublished version', () => {
     expect(
       isNpmNotFoundError({
