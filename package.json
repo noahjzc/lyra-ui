@@ -1,6 +1,6 @@
 {
   "name": "@noah-ji/lyra-ui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "面向高密度业务系统的 React 基础组件库",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
