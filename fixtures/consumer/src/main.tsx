@@ -7,6 +7,7 @@ import {
 import { Z_BASE } from '@noah-ji/lyra-ui/overlay';
 import { createRoot } from 'react-dom/client';
 import '@noah-ji/lyra-ui/styles.css';
+import './styles.css';
 
 interface Row {
   id: string;
@@ -18,7 +19,7 @@ const columns: DataTableColumn<Row>[] = [
 
 function App() {
   return (
-    <main>
+    <main className="outline-ui-ring w-[37rem]">
       <Button variant="primary">保存</Button>
       <SelectField options={[{ label: '启用', value: 'enabled' }]} />
       <DataTable columns={columns} data={[{ id: '1', name: '客户 A' }]} />

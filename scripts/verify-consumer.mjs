@@ -72,6 +72,7 @@ export function verifyConsumer(args) {
   run('pnpm', ['install', '--no-frozen-lockfile']);
   run('pnpm', ['typecheck']);
   run('pnpm', ['build']);
+  run('pnpm', ['test:css']);
   run('pnpm', ['test:cjs']);
   run('pnpm', ['test:private']);
 }
