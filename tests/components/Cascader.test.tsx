@@ -81,6 +81,37 @@ describe('Cascader', () => {
     ).toBeInTheDocument();
   });
 
+  it('commits a searchable non-leaf path and restores trigger focus', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+
+    render(
+      <Cascader
+        changeOnSelect
+        onValueChange={onValueChange}
+        options={options}
+        placeholder="搜索并选择组织"
+        showSearch
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '搜索并选择组织' }));
+    const searchInput = screen.getByRole('textbox', { name: '搜索级联路径' });
+    await waitFor(() => expect(searchInput).toHaveFocus());
+    await user.type(searchInput, '上海公司');
+    await user.click(
+      screen.getByRole('option', {
+        name: /^华东大区\s*\/\s*上海公司$/,
+      }),
+    );
+
+    expect(onValueChange).toHaveBeenCalledWith(['east', 'shanghai']);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /华东大区.*上海公司/ }),
+    ).toHaveFocus();
+  });
+
   it('keeps disabled paths from committing through search', async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();

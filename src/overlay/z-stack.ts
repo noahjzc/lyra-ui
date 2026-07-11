@@ -17,7 +17,29 @@ const Z_BASE = {
   notification: 2000,
 } as const;
 
-let currentZIndex: number = Z_BASE.imagePreview;
+interface ZStackState {
+  currentZIndex: number;
+}
+
+const Z_STACK_STATE_KEY = Symbol.for(
+  '@noah-ji/lyra-ui/overlay/z-stack/state/v1',
+);
+const sharedGlobal = globalThis as typeof globalThis & {
+  [Z_STACK_STATE_KEY]?: ZStackState;
+};
+
+function getZStackState(): ZStackState {
+  const existingState = sharedGlobal[Z_STACK_STATE_KEY];
+  if (existingState) return existingState;
+
+  const initialState: ZStackState = {
+    currentZIndex: Z_BASE.imagePreview,
+  };
+  sharedGlobal[Z_STACK_STATE_KEY] = initialState;
+  return initialState;
+}
+
+const zStackState = getZStackState();
 const OPEN_STATES = new Set(['open', 'delayed-open', 'instant-open']);
 
 function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
@@ -42,8 +64,8 @@ function isOpenOverlay(element: HTMLElement) {
  * `base` 保证浮层不低于自身语义层；全局递增保证后打开浮层在上。
  */
 export function acquireZIndex(base: number = Z_BASE.popover): number {
-  currentZIndex = Math.max(currentZIndex + 1, base + 1);
-  return currentZIndex;
+  zStackState.currentZIndex = Math.max(zStackState.currentZIndex + 1, base + 1);
+  return zStackState.currentZIndex;
 }
 
 /**
