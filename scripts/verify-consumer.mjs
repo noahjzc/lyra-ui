@@ -42,7 +42,7 @@ function isFile(path) {
 
 export function resolveConsumerSpec(request, options = {}) {
   if (request.mode === 'registry') {
-    return `@noah-ji/lyra-ui@${request.version}`;
+    return request.version;
   }
 
   const absolutePath = resolve(options.cwd ?? process.cwd(), request.path);

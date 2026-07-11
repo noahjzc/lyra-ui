@@ -161,7 +161,7 @@ describe('consumer arguments', () => {
       const request = parseConsumerArgs(['--registry', version]);
 
       expect(request).toEqual({ mode: 'registry', version });
-      expect(resolveConsumerSpec(request)).toBe(`@noah-ji/lyra-ui@${version}`);
+      expect(resolveConsumerSpec(request)).toBe(version);
       expect(isExactSemver(version)).toBe(true);
     },
   );
