@@ -45,6 +45,7 @@ const requiredEntries = [
   'package/README.md',
   'package/LICENSE',
   'package/dist/styles.css',
+  'package/dist/tailwind-theme.css',
 ];
 const invalidConsumerArgs: [string[]][] = [
   [[]],
@@ -134,11 +135,20 @@ describe('tarball entry contract', () => {
     );
   });
 
-  it('requires every release root and the bundled stylesheet', () => {
+  it('requires every release root and the published stylesheets', () => {
     expect(() => assertTarballEntries(requiredEntries)).not.toThrow();
-    expect(() => assertTarballEntries(requiredEntries.slice(0, -1))).toThrow(
-      'Missing tarball entry: package/dist/styles.css',
-    );
+    expect(() =>
+      assertTarballEntries(
+        requiredEntries.filter(
+          entry => entry !== 'package/dist/tailwind-theme.css',
+        ),
+      ),
+    ).toThrow('Missing tarball entry: package/dist/tailwind-theme.css');
+    expect(() =>
+      assertTarballEntries(
+        requiredEntries.filter(entry => entry !== 'package/dist/styles.css'),
+      ),
+    ).toThrow('Missing tarball entry: package/dist/styles.css');
   });
 });
 

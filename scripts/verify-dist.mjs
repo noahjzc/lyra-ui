@@ -37,4 +37,15 @@ if (!/\[data-theme=(?:"dark"|'dark'|dark)\]/.test(css)) {
   throw new Error('Missing CSS contract: [data-theme="dark"]');
 }
 
+const tailwindTheme = readFileSync('dist/tailwind-theme.css', 'utf8');
+if (!tailwindTheme.includes('@theme inline')) {
+  throw new Error('Missing raw Tailwind theme contract: @theme inline');
+}
+if (!tailwindTheme.includes('--color-ui-background:')) {
+  throw new Error('Missing raw Tailwind theme contract: UI color mapping');
+}
+if (tailwindTheme.includes('--ui-background:')) {
+  throw new Error('Tailwind theme contract must not duplicate token values');
+}
+
 console.log('dist contract verified');

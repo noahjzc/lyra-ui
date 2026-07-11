@@ -8,7 +8,11 @@ const exactEntries = new Set([
   'package/LICENSE',
 ]);
 const distPrefix = 'package/dist/';
-const requiredEntries = [...exactEntries, 'package/dist/styles.css'];
+const requiredEntries = [
+  ...exactEntries,
+  'package/dist/styles.css',
+  'package/dist/tailwind-theme.css',
+];
 
 export function isAllowedTarballEntry(entry) {
   if (typeof entry !== 'string' || entry.length === 0) return false;
