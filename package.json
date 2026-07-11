@@ -57,8 +57,7 @@
   "author": "noah-ji",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://packages.aliyun.com/632951f8fdd17195542c22d6/npm/npm-registry/"
   },
   "peerDependencies": {
     "react": ">=19 <20",
