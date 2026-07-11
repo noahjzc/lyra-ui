@@ -17,6 +17,7 @@ const exportsMap = {
   '.': target('index', 'index.d.ts'),
   './overlay': target('overlay', 'overlay/index.d.ts'),
   './styles.css': './dist/styles.css',
+  './tailwind-theme.css': './dist/tailwind-theme.css',
 };
 
 for (const [category, components] of Object.entries(entrypoints)) {

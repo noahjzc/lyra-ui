@@ -119,6 +119,7 @@
       "require": "./dist/cjs/overlay.cjs"
     },
     "./styles.css": "./dist/styles.css",
+    "./tailwind-theme.css": "./dist/tailwind-theme.css",
     "./general": {
       "types": "./dist/types/components/general/index.d.ts",
       "import": "./dist/esm/general.js",

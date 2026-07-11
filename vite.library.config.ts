@@ -1,7 +1,8 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 import entrypoints from './config/public-entrypoints.json';
 
@@ -15,6 +16,24 @@ function sourceEntry(path: string) {
   const match = candidates.find(candidate => existsSync(candidate));
   if (!match) throw new Error(`Missing public source entry: ${path}`);
   return resolve(match);
+}
+
+const tailwindThemeContract = readFileSync(
+  resolve('src/styles/tailwind-theme.css'),
+  'utf8',
+);
+
+function emitTailwindThemeContract(): Plugin {
+  return {
+    name: 'emit-tailwind-theme-contract',
+    generateBundle() {
+      this.emitFile({
+        fileName: 'tailwind-theme.css',
+        source: tailwindThemeContract,
+        type: 'asset',
+      });
+    },
+  };
 }
 
 const entries: Record<string, string> = {
@@ -45,7 +64,7 @@ const runtimePackages = [
 ];
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), emitTailwindThemeContract()],
   build: {
     cssCodeSplit: false,
     emptyOutDir: true,

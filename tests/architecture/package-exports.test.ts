@@ -8,6 +8,7 @@ const expectedSubpaths = [
   '.',
   './overlay',
   './styles.css',
+  './tailwind-theme.css',
   ...Object.entries(entrypoints).flatMap(([category, components]) => [
     `./${category}`,
     ...(components as string[]).map(component => `./${category}/${component}`),
