@@ -6,11 +6,7 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       document.documentElement.dataset.theme = context.globals.theme;
-      return (
-        <div className="lyra-story-shell">
-          <Story />
-        </div>
-      );
+      return <Story />;
     },
   ],
   globalTypes: {

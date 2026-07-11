@@ -13,8 +13,3 @@ body {
 *::after {
   box-sizing: border-box;
 }
-
-.lyra-story-shell {
-  min-width: min(1120px, calc(100vw - 32px));
-  padding: 16px;
-}

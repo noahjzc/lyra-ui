@@ -34,6 +34,22 @@ const stories = [
 
 const label = process.env.EVIDENCE_LABEL ?? 'target';
 
+test('centered 布局按 Story 内容本身居中', async ({ page }) => {
+  await page.goto('/iframe.html?id=primitives-data-input-input--variants');
+
+  const storyContent = page.locator('[class~="w-[760px]"]');
+  await expect(storyContent).toBeVisible();
+
+  const box = await storyContent.boundingBox();
+  expect(box).not.toBeNull();
+  if (box == null) {
+    throw new Error('Centered story content has no bounding box.');
+  }
+
+  const contentCenter = box.x + box.width / 2;
+  expect(Math.abs(contentCenter - viewport.width / 2)).toBeLessThanOrEqual(1);
+});
+
 for (const story of stories) {
   for (const theme of ['light', 'dark'] as const) {
     test(`${story} ${theme}`, async ({ page }) => {
