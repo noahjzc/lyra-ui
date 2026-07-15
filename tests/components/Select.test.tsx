@@ -214,7 +214,7 @@ describe('Select', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: '搜索客户' }));
+    await user.click(screen.getByRole('combobox', { name: '搜索客户' }));
     await user.type(screen.getByRole('textbox', { name: '搜索选项' }), '李');
 
     expect(screen.getByRole('option', { name: /李娜/ })).toBeInTheDocument();
@@ -240,7 +240,7 @@ describe('Select', () => {
       />,
     );
 
-    const trigger = screen.getByRole('button', { name: '状态筛选' });
+    const trigger = screen.getByRole('combobox', { name: '状态筛选' });
     const clearButton = screen.getByRole('button', { name: '清空选择' });
 
     expect(clearButton).toHaveAttribute('type', 'button');
@@ -269,7 +269,7 @@ describe('Select', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: '已选客户' }));
+    await user.click(screen.getByRole('combobox', { name: '已选客户' }));
 
     expect(
       await screen.findByRole('option', { name: '已选客户' }),
@@ -292,7 +292,7 @@ describe('Select', () => {
 
     render(<RemoteSelect debounceMs={0} loadOptions={loadOptions} />);
 
-    await user.click(screen.getByRole('button', { name: '请选择' }));
+    await user.click(screen.getByRole('combobox', { name: '请选择' }));
 
     expect(await screen.findByText('选项加载失败')).toBeInTheDocument();
 
