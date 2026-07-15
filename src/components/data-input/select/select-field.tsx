@@ -3,15 +3,6 @@ import { ChevronDown, Search, X } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '../../../internal/cn';
 import { useOverlayZIndex, Z_BASE } from '../../../overlay/z-stack';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-} from './components';
 import { useControllableValue } from './hooks';
 import { SelectFieldOptions, SelectFieldState } from './options';
 import type { SelectFieldProps, SelectOption } from './types';
@@ -117,96 +108,6 @@ export const SelectField = React.forwardRef<HTMLDivElement, SelectFieldProps>(
       window.setTimeout(() => searchInputRef.current?.focus(), 0);
     }, [open, searchable]);
 
-    if (!searchable) {
-      return (
-        <div
-          className={cn('relative w-full min-w-0', className)}
-          ref={ref}
-          {...rootProps}
-        >
-          <Select
-            defaultValue={isValueControlled ? undefined : defaultValue}
-            disabled={disabled}
-            onOpenChange={updateOpen}
-            onValueChange={nextValue => setSelectedValue(nextValue)}
-            open={open}
-            value={selectedValue}
-          >
-            <SelectTrigger
-              aria-label={
-                triggerAriaLabel ??
-                (typeof selectedOption?.label === 'string'
-                  ? selectedOption.label
-                  : typeof placeholder === 'string'
-                    ? placeholder
-                    : undefined)
-              }
-              invalid={isInvalid}
-              size={size}
-              variant={variant}
-            >
-              <span
-                className={cn(
-                  'min-w-0 flex-1 truncate text-left',
-                  canClear && 'pr-10',
-                  selectedOption == null &&
-                    'font-medium text-ui-muted-foreground',
-                )}
-                data-slot="select-field-value"
-              >
-                {selectedOption?.label ?? placeholder}
-              </span>
-            </SelectTrigger>
-            <SelectContent>
-              {groups != null
-                ? groups.map((group, index) => (
-                    <SelectGroup key={String(group.label)}>
-                      <SelectLabel>{group.label}</SelectLabel>
-                      {group.options.map(option => (
-                        <SelectItem
-                          description={option.description}
-                          disabled={option.disabled}
-                          disabledReason={option.disabledReason}
-                          key={option.value}
-                          value={option.value}
-                        >
-                          {renderOption ? renderOption(option) : option.label}
-                        </SelectItem>
-                      ))}
-                      {index < groups.length - 1 && <SelectSeparator />}
-                    </SelectGroup>
-                  ))
-                : (options ?? []).map(option => (
-                    <SelectItem
-                      description={option.description}
-                      disabled={option.disabled}
-                      disabledReason={option.disabledReason}
-                      key={option.value}
-                      value={option.value}
-                    >
-                      {renderOption ? renderOption(option) : option.label}
-                    </SelectItem>
-                  ))}
-            </SelectContent>
-          </Select>
-          {canClear && (
-            <button
-              aria-label="清空选择"
-              className="absolute top-1/2 right-8 grid size-5 -translate-y-1/2 place-items-center rounded text-ui-muted-foreground transition-ui-state transition-ui-transform hover:bg-ui-muted hover:text-ui-foreground active:scale-95"
-              data-slot="select-field-clear"
-              onClick={event => {
-                event.stopPropagation();
-                setSelectedValue(undefined);
-              }}
-              type="button"
-            >
-              <X aria-hidden="true" className="size-3.5" />
-            </button>
-          )}
-        </div>
-      );
-    }
-
     return (
       <PopoverPrimitive.Root onOpenChange={updateOpen} open={open}>
         <div
@@ -219,7 +120,14 @@ export const SelectField = React.forwardRef<HTMLDivElement, SelectFieldProps>(
               aria-controls={open ? listboxId : undefined}
               aria-expanded={open}
               aria-haspopup="listbox"
-              aria-label={triggerAriaLabel}
+              aria-label={
+                triggerAriaLabel ??
+                (typeof selectedOption?.label === 'string'
+                  ? selectedOption.label
+                  : typeof placeholder === 'string'
+                    ? placeholder
+                    : undefined)
+              }
               className={cn(
                 selectTriggerVariants({ size, variant }),
                 variant === 'underlined' && 'px-0',
@@ -229,6 +137,7 @@ export const SelectField = React.forwardRef<HTMLDivElement, SelectFieldProps>(
               data-slot="select-field-trigger"
               data-state={open ? 'open' : 'closed'}
               disabled={disabled}
+              role="combobox"
               type="button"
             >
               <span
