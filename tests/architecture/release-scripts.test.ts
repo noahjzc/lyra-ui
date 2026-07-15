@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -153,6 +154,14 @@ describe('tarball entry contract', () => {
 });
 
 describe('consumer arguments', () => {
+  it('keeps dependency declaration checking enabled in the consumer fixture', () => {
+    const tsconfig = JSON.parse(
+      readFileSync('fixtures/consumer/tsconfig.json', 'utf8'),
+    );
+
+    expect(tsconfig.compilerOptions.skipLibCheck).toBe(false);
+  });
+
   it('accepts an explicit local tarball', () => {
     const request = parseConsumerArgs(['release.tgz']);
 

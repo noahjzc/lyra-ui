@@ -1,4 +1,6 @@
 const assert = require('node:assert/strict');
+const React = require('react');
+const { renderToStaticMarkup } = require('react-dom/server');
 const root = require('@noah-ji/lyra-ui');
 const overlay = require('@noah-ji/lyra-ui/overlay');
 
@@ -7,6 +9,13 @@ if (!root.Button || !root.DataTable || !overlay.useOverlayZIndex) {
 }
 
 async function main() {
+  const loadingButton = renderToStaticMarkup(
+    React.createElement(root.Button, { loading: true }, '处理中'),
+  );
+
+  assert.match(loadingButton, /aria-busy="true"/);
+  assert.match(loadingButton, /<svg(?:\s|>)/);
+
   const cjsFirst = overlay.acquireZIndex();
   const esmOverlay = await import('@noah-ji/lyra-ui/overlay');
   const esmSecond = esmOverlay.acquireZIndex();
