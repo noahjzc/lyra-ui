@@ -351,6 +351,47 @@ describe('DataTable primitive', () => {
     expect(onChange).toHaveBeenCalledWith(2, 1);
   });
 
+  it('does not paginate server-provided page data again in manual pagination mode', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={rows}
+        manualPagination
+        pagination={{ current: 2, pageSize: 2, total: 4 }}
+      />,
+    );
+
+    expect(screen.getByRole('cell', { name: '上海客户' })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: '北京客户' })).toBeInTheDocument();
+  });
+
+  it('preserves server ordering in manual sorting mode', async () => {
+    const user = userEvent.setup();
+    const onSortingChange = vi.fn();
+    const serverOrderedRows = [rows[1], rows[0]];
+
+    render(
+      <DataTable
+        columns={columns}
+        data={serverOrderedRows}
+        manualSorting
+        onSortingChange={onSortingChange}
+        sorting={[{ desc: false, id: 'name' }]}
+      />,
+    );
+
+    expect(
+      screen
+        .getAllByRole('row')
+        .slice(1)
+        .map(row => row.textContent),
+    ).toEqual(['北京客户B查看', '上海客户A查看']);
+
+    await user.click(screen.getByRole('button', { name: /客户名称/ }));
+
+    expect(onSortingChange).toHaveBeenCalledTimes(1);
+  });
+
   it('renders empty, loading and error states', () => {
     const { rerender } = render(<DataTable columns={columns} data={[]} />);
 

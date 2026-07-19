@@ -70,6 +70,16 @@ export interface DataTableProps<TData extends RowData>
   filters?: React.ReactNode;
   getRowId?: (row: TData, index: number) => string;
   loading?: boolean;
+  /**
+   * 是否使用服务端分页。启用后，`data` 应只包含当前页数据，
+   * DataTable 不会再对其做客户端分页。
+   */
+  manualPagination?: boolean;
+  /**
+   * 是否使用服务端排序。启用后，DataTable 仅维护和上报排序状态，
+   * 不会重新排列 `data`。
+   */
+  manualSorting?: boolean;
   onColumnPinningChange?: OnChangeFn<ColumnPinningState>;
   onColumnVisibilityChange?: OnChangeFn<VisibilityState>;
   onRetry?: () => void;

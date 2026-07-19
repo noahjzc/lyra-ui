@@ -61,6 +61,8 @@ export function DataTable<TData extends RowData>({
   filters,
   getRowId,
   loading = false,
+  manualPagination = false,
+  manualSorting = false,
   onColumnPinningChange,
   onColumnVisibilityChange,
   onRetry,
@@ -137,9 +139,12 @@ export function DataTable<TData extends RowData>({
     data,
     enableRowSelection: selectable,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: pagination ? getPaginationRowModel() : undefined,
+    getPaginationRowModel:
+      pagination && !manualPagination ? getPaginationRowModel() : undefined,
     getRowId,
-    getSortedRowModel: getSortedRowModel(),
+    getSortedRowModel: manualSorting ? undefined : getSortedRowModel(),
+    manualPagination,
+    manualSorting,
     onColumnPinningChange: updater => {
       if (columnPinning == null) {
         setInternalColumnPinning(current => {
