@@ -58,6 +58,14 @@ function isOpenOverlay(element: HTMLElement) {
   return state == null || OPEN_STATES.has(state);
 }
 
+function syncRadixPopperWrapperZIndex(element: HTMLElement, zIndex: number) {
+  // Radix Popper 外层只在挂载时复制内容层级，运行时抬升后需显式保持同步。
+  const wrapper = element.parentElement;
+  if (!wrapper?.hasAttribute('data-radix-popper-content-wrapper')) return;
+
+  wrapper.style.zIndex = String(zIndex);
+}
+
 /**
  * 获取下一个运行时 z-index。
  *
@@ -103,11 +111,14 @@ export function useOverlayZIndex<T extends HTMLElement = HTMLElement>(
     queueMicrotask(() => {
       pendingRaiseRef.current = false;
 
-      if (elementRef.current == null || !isOpenOverlay(elementRef.current)) {
+      const element = elementRef.current;
+      if (element == null || !isOpenOverlay(element)) {
         return;
       }
 
-      setZIndex(acquireZIndex(base));
+      const nextZIndex = acquireZIndex(base);
+      syncRadixPopperWrapperZIndex(element, nextZIndex);
+      setZIndex(nextZIndex);
     });
   }, [base]);
 

@@ -6,6 +6,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import {
   Select,
   SelectContent,
+  SelectField,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -220,6 +221,44 @@ describe('Drawer', () => {
     expect(Number.isFinite(selectPortalLayerZIndex)).toBe(true);
     expect(selectZIndex).toBeGreaterThan(drawerZIndex);
     expect(selectPortalLayerZIndex).toBeGreaterThan(drawerZIndex);
+  });
+
+  it('stacks a Drawer-contained SelectField Popper wrapper above the Drawer on first open', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Drawer>
+        <DrawerTrigger>打开行业表单</DrawerTrigger>
+        <DrawerContent aria-describedby={undefined} size="form">
+          <DrawerHeader>
+            <DrawerTitle>编辑基础信息</DrawerTitle>
+          </DrawerHeader>
+          <DrawerBody>
+            <SelectField
+              options={[
+                { label: '智能制造', value: 'manufacturing' },
+                { label: '电子', value: 'electronics' },
+              ]}
+              placeholder="选择行业"
+            />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>,
+    );
+
+    await user.click(screen.getByRole('button', { name: '打开行业表单' }));
+    const drawer = screen.getByRole('dialog', { name: '编辑基础信息' });
+    await user.click(screen.getByRole('combobox', { name: '选择行业' }));
+
+    const listbox = await screen.findByRole('listbox');
+    const popperWrapper = listbox.closest(
+      '[data-radix-popper-content-wrapper]',
+    ) as HTMLElement | null;
+
+    expect(popperWrapper).toBeInTheDocument();
+    expect(Number(popperWrapper?.style.zIndex)).toBeGreaterThan(
+      Number(drawer.style.zIndex),
+    );
   });
 
   it('keeps the drawer open after outside click by default', async () => {
