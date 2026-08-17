@@ -119,7 +119,7 @@ export const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
             </FormLabel>
           )}
           <div
-            className="grid min-w-0 gap-1"
+            className="grid min-w-0 gap-1 [grid-template-columns:minmax(0,1fr)]"
             data-slot="form-field-body"
             style={
               wrapperWidth

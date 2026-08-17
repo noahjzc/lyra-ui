@@ -96,6 +96,24 @@ describe('Form primitive', () => {
     });
   });
 
+  it('uses a definite single column so controls fill and truncate', () => {
+    const { container } = render(
+      <Form layout="vertical">
+        <Form.Item label="客户名称" name="name">
+          <Form.Control asChild>
+            <Input />
+          </Form.Control>
+        </Form.Item>
+      </Form>,
+    );
+
+    // 控件区使用 minmax(0,1fr) 轨道：控件铺满列宽，长内容可收缩截断，
+    // 而不是按内容 max-content 撑开轨道（溢出字段格、重叠相邻列）。
+    expect(
+      container.querySelector('[data-slot="form-field-body"]'),
+    ).toHaveClass('[grid-template-columns:minmax(0,1fr)]');
+  });
+
   it('submits native form values', async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn((event: React.FormEvent<HTMLFormElement>) => {
